@@ -1,0 +1,366 @@
+import 'package:aming_kit/aming_kit.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import 'console.dart';
+
+void openDevTools({
+  BuildContext? context,
+  OuiDevOption? option1,
+  OuiDevOption? option2,
+  OuiDevOption? option3,
+  OuiDevOption? option4,
+  OuiDevOption? option5,
+  OuiDevOption? option6,
+  OuiDevOption? option7,
+  OuiDevOption? option8,
+  OuiDevOption? option9,
+}) => openOverlay("devTools",
+    OuiDevTools(
+  option1: option1,
+  option2: option2,
+  option3: option3,
+  option4: option4,
+  option5: option5,
+  option6: option6,
+  option7: option7,
+  option8: option8,
+  option9: option9,
+), context: context);
+
+class OuiDevOption{
+  OuiDevOption(this.icon, this.text, {this.onClick});
+  final IconData? icon;
+  final String? text;
+  final GestureTapCallback? onClick;
+}
+
+class OuiDevTools extends StatefulWidget {
+  const OuiDevTools({
+    Key? key,
+    this.option1,
+    this.option2,
+    this.option3,
+    this.option4,
+    this.option5,
+    this.option6,
+    this.option7,
+    this.option8,
+    this.option9,
+  }):super(key: key);
+
+  final OuiDevOption? option1;
+  final OuiDevOption? option2;
+  final OuiDevOption? option3;
+  final OuiDevOption? option4;
+  final OuiDevOption? option5;
+  final OuiDevOption? option6;
+  final OuiDevOption? option7;
+  final OuiDevOption? option8;
+  final OuiDevOption? option9;
+
+  static void open({
+    BuildContext? context,
+    OuiDevOption? option1,
+    OuiDevOption? option2,
+    OuiDevOption? option3,
+    OuiDevOption? option4,
+    OuiDevOption? option5,
+    OuiDevOption? option6,
+    OuiDevOption? option7,
+    OuiDevOption? option8,
+    OuiDevOption? option9,
+  }) {
+    log.setDebugMode(true);
+    openOverlay("devTools", OuiDevTools(
+      option1: option1 ?? OuiDevOption(Icons.construction_outlined, "控制台", onClick: isNotNull(OuiGlobal.globalContext) ? () => showModalBottomSheet(
+
+        backgroundColor: Colors.transparent,
+        context: OuiGlobal.globalContext!,
+        builder: (BuildContext context){
+          return const OuiConsole();
+        },
+      ) : null),
+      option2: option2 ?? OuiDevOption(Icons.warning, ""),
+      option3: option3 ?? OuiDevOption(Icons.warning, ""),
+      option4: option4 ?? OuiDevOption(Icons.warning, ""),
+      option5: option5 ?? OuiDevOption(Icons.warning, ""),
+      option6: option6 ?? OuiDevOption(Icons.warning, ""),
+      option7: option7 ?? OuiDevOption(Icons.warning, ""),
+      option8: option8 ?? OuiDevOption(Icons.warning, ""),
+      option9: option9 ?? OuiDevOption(Icons.download_done, "重启工具", onClick: (){
+        open(
+            option1: option1,
+            option2: option2,
+            option3: option3,
+            option4: option4,
+            option5: option5,
+            option6: option6,
+            option7: option7,
+            option8: option8,
+            option9: option9
+        );
+      }),
+    ));
+    log.system("initialization", tag: "DebugTools");
+  }
+
+  static void close() {
+    log.setDebugMode(false);
+    closeOverlay("devTools");
+  }
+
+  @override
+  _OuiDevTools createState() => _OuiDevTools();
+}
+
+class _OuiDevTools extends State<OuiDevTools> {
+
+  final String _configDX = "oui_bugbox_dx";
+  final String _configDY = "oui_bugbox_dy";
+  final double _size = 50;
+
+  Offset? offset;
+  double _opacity = 0;
+  bool isOpen = false;
+
+  List<OuiDevOption> options = [];
+
+  @override
+  void initState() {
+    super.initState();
+    if(mounted){
+      setState(() {
+        if(isNotNull(widget.option1)) options.add(widget.option1!);
+        if(isNotNull(widget.option2)) options.add(widget.option2!);
+        if(isNotNull(widget.option3)) options.add(widget.option3!);
+        if(isNotNull(widget.option4)) options.add(widget.option4!);
+        if(isNotNull(widget.option5)) options.add(widget.option5!);
+        if(isNotNull(widget.option6)) options.add(widget.option6!);
+        if(isNotNull(widget.option7)) options.add(widget.option7!);
+        if(isNotNull(widget.option8)) options.add(widget.option8!);
+        if(isNotNull(widget.option9)) options.add(widget.option9!);
+
+        double _x = OuiCache.getDouble(_configDX, defValue: 0.0);
+        double _y = OuiCache.getDouble(_configDY, defValue: kToolbarHeight + 100);
+        // if(_x != 0 && (_x > OuiSize.screenW() || _x < OuiSize.screenW())){
+        //     log.info(_x);
+        //     _x = OuiSize.screenW();
+        //     log.info(_x);
+        // }
+        offset = Offset(
+          _x,
+          _y,
+        );
+      });
+    }
+  }
+
+
+  Offset _calOffset(Size size, Offset offset, Offset nextOffset) {
+    double dx = 0;
+    if (offset.dx + nextOffset.dx <= 0) {
+      dx = 0;
+    } else if (offset.dx + nextOffset.dx >= (size.width - _size)) {
+      dx = size.width - _size;
+    } else {
+      dx = offset.dx + nextOffset.dx;
+    }
+    double dy = 0;
+    if (offset.dy + nextOffset.dy >= (size.height - 100)) {
+      dy = size.height - 100;
+    } else if (offset.dy + nextOffset.dy <= kToolbarHeight) {
+      dy = kToolbarHeight;
+    } else {
+      dy = offset.dy + nextOffset.dy;
+    }
+    return Offset(dx, dy);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        highlightColor: Colors.transparent,
+        appBarTheme: AppBarTheme.of(context).copyWith(
+          brightness: Brightness.dark,
+        ),
+      ),
+      child: AnimatedPositioned(
+        left: isOpen == true ? (OuiSize.screenWidth() / 2 - 125) : offset?.dx,
+        top: isOpen == true ? (OuiSize.screenHeight() / 2 - 125) : offset?.dy,
+        duration: const Duration(milliseconds: 80),
+        child: GestureDetector(
+          onTap: _open,
+          onPanUpdate: (detail) {
+            if(isOpen == false){
+              setState(() {
+                _opacity = 0.3;
+                offset = _calOffset(OuiSize.mediaQuery.size, offset!, detail.delta);
+              });
+            }
+          },
+          onPanEnd: (detail) {
+            double screenWidget = OuiSize.screenWidth() - _size;
+            double screen50Widget = screenWidget / 2;
+            Offset? _offset = offset;
+            Offset? _offset2 = offset;
+            if(offset!.dx > screen50Widget){
+              _offset2 = Offset(screenWidget, 0);
+            } else {
+              _offset = Offset(0, offset!.dy);
+              _offset2 = const Offset(0, 0);
+            }
+            setState(() {
+              offset = _calOffset(MediaQuery.of(context).size, _offset!, _offset2!);
+              OuiCache.setDouble(_configDX, offset!.dx);
+              OuiCache.setDouble(_configDY, offset!.dy);
+            });
+            setTimeout((){
+              if(isOpen == false){
+                setState(() {
+                  _opacity = 0;
+                });
+              }
+            }, 1500);
+          },
+
+          child: AnimatedCrossFade(
+            duration: const Duration(milliseconds: 200),
+            // firstCurve: Curves.easeInCirc,
+            // secondCurve: Curves.easeInToLinear,
+            // sizeCurve: Curves.bounceOut,
+            crossFadeState: !isOpen ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            secondChild: Material(
+              color: Theme.of(context).textTheme.headline6!.color!.withOpacity(0.5 + _opacity),
+              borderRadius: BorderRadius.circular(10),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  width: 250,
+                  height: 250,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    // color: Theme.of(context).textTheme.headline6!.color!.withOpacity(0.5 + _opacity),
+                  ),
+                  child: Center(
+                    child: Wrap(
+                      spacing: 0,
+                      runSpacing: 0,
+                      children: options.map<Widget>(_btn).toList(),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            firstChild: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: _size,
+              width: _size,
+              decoration: BoxDecoration(
+                color: Theme.of(context).textTheme.headline6!.color!.withOpacity(0.2 + _opacity),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  height: _size - 15,
+                  width: _size - 15,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.5 + _opacity),
+                    borderRadius: BorderRadius.circular(90),
+                  ),
+                  child: Center(
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      height: _size - 23,
+                      width: _size - 23,
+                      decoration: BoxDecoration(
+
+                        color: Colors.white.withOpacity(0.5 + _opacity),
+                        borderRadius: BorderRadius.circular(90),
+                      ),
+                      child: Icon(Icons.bug_report,
+                        color: Colors.black.withOpacity(0.3),
+                        size: _size - 30,
+                      ),
+
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
+      ),
+    );
+  }
+
+  var x;
+  void _open(){
+    if(!isOpen){
+      setState(() {
+        isOpen = true;
+        _opacity = 0.3;
+        x = setTimeout((){
+          setState(() {
+            isOpen = false;
+            _opacity = 0;
+          });
+        }, 5000);
+      });
+    }
+  }
+
+  Widget _btn(OuiDevOption option){
+    GestureTapCallback? _onClick = option.onClick;
+    String? _text = option.text;
+    IconData? _icon = option.icon;
+    
+    
+
+    return Visibility(
+      visible: isOpen,
+      child: GestureDetector(
+        onTap: (){
+          setState(() {
+            if(isNotNull(x)) x?.cancel();
+            isOpen = false;
+            _opacity = 0;
+          });
+          if(isNotNull(_onClick)) _onClick!();
+        },
+
+        child: Container(
+          margin: const EdgeInsets.all(1),
+          height: 80,
+          width: 80,
+          decoration: const BoxDecoration(
+          ),
+          child: Center(
+            child: isNotNull(_onClick) ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: Center(
+                    child: Icon(_icon, color: Colors.white),
+                  ),
+                ),
+                Text(_text ?? "",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ) : null,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
