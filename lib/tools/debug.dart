@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:aming_kit/aming_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -72,6 +74,7 @@ class OuiDevTools extends StatefulWidget {
     OuiDevOption? option9,
   }) {
     log.setDebugMode(true);
+    OuiCache.setBool("runDebug", true);
     openOverlay("devTools", OuiDevTools(
       option1: option1 ?? OuiDevOption(Icons.construction_outlined, "控制台", onClick: isNotNull(OuiGlobal.globalContext) ? () => showModalBottomSheet(
 
@@ -86,9 +89,12 @@ class OuiDevTools extends StatefulWidget {
       option4: option4 ?? OuiDevOption(Icons.warning, ""),
       option5: option5 ?? OuiDevOption(Icons.warning, ""),
       option6: option6 ?? OuiDevOption(Icons.warning, ""),
-      option7: option7 ?? OuiDevOption(Icons.warning, ""),
-      option8: option8 ?? OuiDevOption(Icons.warning, ""),
-      option9: option9 ?? OuiDevOption(Icons.download_done, "重启工具", onClick: (){
+      option7: option7 ?? OuiDevOption(Icons.cleaning_services, "清空缓存", onClick: (){
+        OuiCache.clear();
+        OuiCache.setBool("runDebug", true);
+        exit(0);
+      }),
+      option8: option8 ?? OuiDevOption(Icons.cached, "重启工具", onClick: (){
         open(
             option1: option1,
             option2: option2,
@@ -101,12 +107,14 @@ class OuiDevTools extends StatefulWidget {
             option9: option9
         );
       }),
+      option9: option9 ?? OuiDevOption(Icons.exit_to_app, "退出工具", onClick: () => close()),
     ));
     log.system("initialization", tag: "DebugTools");
   }
 
   static void close() {
     log.setDebugMode(false);
+    OuiCache.setBool("runDebug", false);
     closeOverlay("devTools");
   }
 

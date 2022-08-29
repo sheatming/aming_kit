@@ -2,6 +2,14 @@ extension OtherString on String{
   String add(object){
     return "${this}$object";
   }
+
+  int get toInt{
+    return int.parse(this);
+  }
+
+  double get toDouble{
+    return double.parse(this);
+  }
 }
 
 //删除扩展

@@ -19,7 +19,8 @@ class OuiSize {
   static final double _topbarHeight = mediaQuery.padding.top;
   static final double _botbarHeight = mediaQuery.padding.bottom;
   static final double _pixelRatio = mediaQuery.devicePixelRatio;
-  static var _ratio;
+  static double _ratio = 0;
+  static double get ratio => _ratio;
   static init([double number = 750]){
     mediaQuery = MediaQueryData.fromWindow(window);
     double uiWidth = number;

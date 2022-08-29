@@ -1,5 +1,6 @@
 import 'package:aming_kit/aming_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class OuiConsole extends StatefulWidget {
   const OuiConsole({Key? key}) : super(key: key);
@@ -14,7 +15,7 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
 
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
 
@@ -42,14 +43,16 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
               bottom: 1,
             ),
             tabs: const [
-              Tab(child: Text("日志")),
-              Tab(child: Text("网络")),
+              Tab(child: Text("Device")),
+              Tab(child: Text("Console")),
+              Tab(child: Text("Network")),
             ],
           ),
         ),
         body: TabBarView(
           controller: _tabController,
           children: const [
+            _DeviceInfo(),
             _ConsoleLog(),
             _NetworkLog(),
           ],
@@ -58,6 +61,87 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
     );
   }
 }
+
+class _DeviceInfo extends StatefulWidget {
+  const _DeviceInfo({Key? key}) : super(key: key);
+
+  @override
+  State<_DeviceInfo> createState() => _DeviceInfoState();
+}
+
+class _DeviceInfoState extends State<_DeviceInfo> {
+
+  AndroidDeviceInfo? androidInfo;
+  IosDeviceInfo? iosInfo;
+
+  @override
+  void initState() {
+    _initDeviceInfo();
+    super.initState();
+  }
+
+  void _initDeviceInfo() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    if(isIOS){
+      iosInfo = await deviceInfo.iosInfo;
+    } else if(isAndroid) {
+      androidInfo = await deviceInfo.androidInfo;
+    }
+    if(mounted)setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xfffafafa),
+      ),
+      child: ListView(
+        padding: const EdgeInsets.only(
+          top: 10
+        ),
+        children: [
+          if(isIOS)
+            Column(
+              children: const [
+
+              ],
+            ),
+          if(isAndroid && isNotNull(androidInfo))
+            Column(
+              children: [
+                _infoItem("品牌", androidInfo?.brand),
+                _infoItem("型号", androidInfo?.model),
+                _infoItem("制造商", androidInfo?.manufacturer),
+                _infoItem("设备ID", androidInfo?.id),
+                _infoItem("AndroidSDK版本", androidInfo?.version.sdkInt),
+                _infoItem("物理设备", androidInfo?.isPhysicalDevice),
+                _infoItem("屏幕尺寸", "${OuiSize.mediaQuery.size.height}/${OuiSize.mediaQuery.size.width}"),
+                _infoItem("设备像素比", "${OuiSize.mediaQuery.devicePixelRatio}/${OuiSize.ratio}"),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoItem(title, content, {bool isBorder = true}){
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+      ),
+      margin: const EdgeInsets.only(
+        bottom: 5
+      ),
+      child: ListTile(
+        dense: true,
+        title: Text(title),
+        subtitle: Text("${content ?? '-'}"),
+      ),
+    );
+  }
+}
+
 
 
 class _ConsoleLog extends StatefulWidget {
@@ -80,10 +164,6 @@ class _ConsoleLogState extends State<_ConsoleLog> {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        // borderRadius: BorderRadius.only(
-        //   topLeft: Radius.circular(10),
-        //   topRight: Radius.circular(10),
-        // ),
         color: Color(0xfffafafa),
       ),
       child: RefreshIndicator(
@@ -218,10 +298,6 @@ class _NetworkLogState extends State<_NetworkLog> {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        // borderRadius: BorderRadius.only(
-        //   topLeft: Radius.circular(10),
-        //   topRight: Radius.circular(10),
-        // ),
         color: Color(0xfffafafa),
       ),
       child: RefreshIndicator(
@@ -261,7 +337,7 @@ class _NetworkLogState extends State<_NetworkLog> {
         const Divider(height: 1, color: Colors.white),
         _detailText("响应头", item.queryHeader.toString()),
         _detailText("响应时间", "${item.queryTime.toString()}ms"),
-        _detailText("响应参数", item.data.toString()),
+        _detailText("响应参数", "\r\n${_convert(item.data, 2)}"),
       ]),
       child: Card(
         elevation: 0,
@@ -348,6 +424,72 @@ Widget _detailText(String title, String text){
       ))
     ],
   );
+}
+
+
+/// [object]  解析的对象
+/// [deep]  递归的深度，用来获取缩进的空白长度
+/// [isObject] 用来区分当前map或list是不是来自某个字段，则不用显示缩进。单纯的map或list需要添加缩进
+String _convert(dynamic object, int deep, {bool isObject = false}) {
+  var buffer = StringBuffer();
+  var nextDeep = deep + 1;
+  if (object is Map) {
+    var list = object.keys.toList();
+    if (!isObject) {//如果map来自某个字段，则不需要显示缩进
+      buffer.write("${getDeepSpace(deep)}");
+    }
+    buffer.write("{");
+    if (list.isEmpty) {//当map为空，直接返回‘}’
+      buffer.write("}");
+    }else {
+      buffer.write("\n");
+      for (int i = 0; i < list.length; i++) {
+        buffer.write("${getDeepSpace(nextDeep)}\"${list[i]}\":");
+        buffer.write(_convert(object[list[i]], nextDeep, isObject: true));
+        if (i < list.length - 1) {
+          buffer.write(",");
+          buffer.write("\n");
+        }
+      }
+      buffer.write("\n");
+      buffer.write("${getDeepSpace(deep)}}");
+    }
+  } else if (object is List) {
+    if (!isObject) {//如果list来自某个字段，则不需要显示缩进
+      buffer.write("${getDeepSpace(deep)}");
+    }
+    buffer.write("[");
+    if (object.isEmpty) {//当list为空，直接返回‘]’
+      buffer.write("]");
+    }else {
+      buffer.write("\n");
+      for (int i = 0; i < object.length; i++) {
+        buffer.write(_convert(object[i], nextDeep));
+        if (i < object.length - 1) {
+          buffer.write(",");
+          buffer.write("\n");
+        }
+      }
+      buffer.write("\n");
+      buffer.write("${getDeepSpace(deep)}]");
+    }
+  } else if (object is String) {//为字符串时，需要添加双引号并返回当前内容
+    buffer.write("\"$object\"");
+  } else if (object is num || object is bool) {//为数字或者布尔值时，返回当前内容
+    buffer.write(object);
+  }  else {//如果对象为空，则返回null字符串
+    buffer.write("null");
+  }
+  return buffer.toString();
+}
+
+
+String getDeepSpace(int deep) {
+  var tab = StringBuffer();
+  for (int i = 0; i < deep; i++) {
+    tab.write("\t");
+  }
+  return tab.toString();
 }
 
 void openDetailDialog(BuildContext context, String title, {List<Widget>? children}) => showDialog(

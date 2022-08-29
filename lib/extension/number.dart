@@ -12,6 +12,17 @@ extension ExtNum on num {
   );
 }
 
+extension ExtInt on int {
+  List<int> get toList{
+    List<int> t = [];
+    for(int i=0; i<=this; i++){
+      t.add(i);
+    }
+    return t;
+  }
+
+}
+
 
 String _toTime(value, {String defValue = "-", bool isTimeLine = false, DayFormat? dayFormat, String? format}){
   num oldString;

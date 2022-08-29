@@ -170,56 +170,69 @@ class OuiApi {
     }, onError: (error, handler) {
 
       if (error.error is SocketException) {
-        String _log = "🔗 ${error.requestOptions.baseUrl}${error.requestOptions.path}#br#${error.error}#br#📦 ${error.requestOptions.data ?? "-"}#br#📧 ${data ?? "-"}#br#👨 ${error.requestOptions.headers}";
-        log.http(_log);
-        if(OuiLog.oDebugMode){
-          networkLog.insert(0, NetworkLogItem(
-            statusCode: 503,
-            statusMessage: error.error.toString(),
-            url: "${error.requestOptions.baseUrl}${error.requestOptions.path}",
-            method: error.requestOptions.method,
-            params: error.requestOptions.data,
-            data: "-",
-            header: error.requestOptions.headers,
-            queryTime: DateTime.now().millisecondsSinceEpoch - _queryTime,
-          ));
-        }
-
+        _pushLog(
+          queryTime: _queryTime,
+          requestOptions: error.requestOptions,
+          error: error,
+          code: 503,
+        );
         gotoNoNetWork(handler, error.requestOptions);
         return;
       }
       switch (error.type) {
         case DioErrorType.connectTimeout:
+          _pushLog(
+            queryTime: _queryTime,
+            requestOptions: error.requestOptions,
+            error: error,
+            code: 503,
+          );
           gotoNoNetWork(handler, error.requestOptions);
           return;
         case DioErrorType.receiveTimeout:
+          _pushLog(
+            queryTime: _queryTime,
+            requestOptions: error.requestOptions,
+            error: error,
+            code: 503,
+          );
           gotoNoNetWork(handler, error.requestOptions);
           return;
-        case DioErrorType.other:
-          handler.next(error);
-          break;
         default:
+          _pushLog(
+            queryTime: _queryTime,
+            requestOptions: error.requestOptions,
+            error: error,
+            code: 999,
+          );
           handler.next(error);
           break;
       }
     }, onResponse: (result, handler) {
       int? _status = result.statusCode;
-      if (_status == 200) _status = result.data['status'];
-      String _log = "🔗 ${result.requestOptions.baseUrl}${result.requestOptions.path}#br#[$_status] - ${result.statusMessage}#br#📦 ${result.requestOptions.data ?? "-"}#br#📧 ${result.data}#br#👨 ${result.requestOptions.headers}";
-      log.http(_log);
-      if(OuiLog.oDebugMode){
-        networkLog.insert(0, NetworkLogItem(
-          statusCode: _status ?? 0,
-          statusMessage: result.statusMessage ?? '-',
-          url: "${result.requestOptions.baseUrl}${result.requestOptions.path}",
-          method: result.requestOptions.method,
-          params: result.requestOptions.data,
-          data: result.data,
-          header: result.requestOptions.headers,
-          queryHeader: result.headers.map,
-          queryTime: DateTime.now().millisecondsSinceEpoch - _queryTime,
-        ));
-      }
+      if (_status == 200) _status = result.data['status'] ?? 0;
+      // String _log = "🔗 ${result.requestOptions.baseUrl}${result.requestOptions.path}#br#[$_status] - ${result.statusMessage}#br#📦 ${result.requestOptions.data ?? "-"}#br#📧 ${result.data}#br#👨 ${result.requestOptions.headers}";
+      // log.http(_log);
+      // if(OuiLog.oDebugMode){
+      //   networkLog.insert(0, NetworkLogItem(
+      //     statusCode: _status ?? 0,
+      //     statusMessage: result.statusMessage ?? '-',
+      //     url: "${result.requestOptions.baseUrl}${result.requestOptions.path}",
+      //     method: result.requestOptions.method,
+      //     params: result.requestOptions.data,
+      //     data: result.data,
+      //     header: result.requestOptions.headers,
+      //     queryHeader: result.headers.map,
+      //     queryTime: DateTime.now().millisecondsSinceEpoch - _queryTime,
+      //   ));
+      // }
+
+      _pushLog(
+        queryTime: _queryTime,
+        requestOptions: result.requestOptions,
+        result: result,
+        code: _status,
+      );
 
 
       switch (_status) {
@@ -291,6 +304,7 @@ class OuiApi {
   }
 
   void gotoNoNetWork(handler, requestOptions) {
+
     handler.resolve(Response(
       statusMessage: "请求超时",
       statusCode: 503,
@@ -345,4 +359,39 @@ ApiResponse _$ApiResponseFromJson(Response responsen) {
       responsen.data['data'],
       responsen
   );
+}
+
+void _pushLog({
+  int queryTime = 0,
+  required RequestOptions requestOptions,
+  DioError? error,
+  Response? result,
+  int? code = 0,
+}){
+
+
+  int? _status = code ?? result?.statusCode ?? result?.data['status'] ?? 0;
+  String _log = "🔗 ${requestOptions.method}: "
+      "${requestOptions.baseUrl}${requestOptions.path}#br#";
+  if(isNotNull(result)) _log += "[$_status] - ${result?.statusMessage ?? "-"}#br#";
+  if(isNotNull(error)) _log += "${error?.error ?? "-"}#br#";
+
+  _log += "📦 ${requestOptions.data ?? "-"}#br#";
+  _log += "📧 ${result?.data ?? '-'}#br#";
+  _log += "👨 ${requestOptions.headers}";
+
+  log.http(_log);
+  if(OuiLog.oDebugMode){
+    networkLog.insert(0, NetworkLogItem(
+      statusCode: _status ?? -500,
+      statusMessage: isNotNull(error) ? "${error?.error ?? "-"}" : (result?.statusMessage ?? '-'),
+      url: "${requestOptions.baseUrl}${requestOptions.path}",
+      method: requestOptions.method,
+      header: requestOptions.headers,
+      params: requestOptions.data,
+      data: result?.data ?? "-",
+      queryHeader: result?.headers.map ?? "-",
+      queryTime: DateTime.now().millisecondsSinceEpoch - queryTime,
+    ));
+  }
 }
