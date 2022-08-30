@@ -1,5 +1,6 @@
 import 'package:aming_kit/aming_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 class OuiConsole extends StatefulWidget {
@@ -226,7 +227,7 @@ class _ConsoleLogState extends State<_ConsoleLog> {
               const SizedBox(height: 8,),
               Row(
                 children: [
-                  Expanded(child: Text("${item.content}", maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(
+                  Expanded(child: Text(item.content, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(
                     fontSize: 12,
                   ))),
 
@@ -326,16 +327,21 @@ class _NetworkLogState extends State<_NetworkLog> {
   Widget _item(NetworkLogItem item){
     return GestureDetector(
       onTap: () => openDetailDialog(context, "网络请求", children: [
+        GestureDetector(
+          onTap: (){
+            Clipboard.setData(ClipboardData(text: item.url));
+          },
+          child: _detailText("请求Url", item.url),
+        ),
         _detailText("请求时间", item.date.toTime()),
-        _detailText("请求Url", item.url),
         _detailText("请求方法", item.method),
         _detailText("状态代码", item.statusCode.toString()),
         _detailText("请求消息", item.statusMessage.toString()),
-        _detailText("请求参数", item.params.toString()),
-        _detailText("请求头", item.header.toString()),
+        _detailText("请求参数", "\r\n${_convert(item.params, 2)}"),
+        _detailText("请求头", "\r\n${_convert(item.header, 2)}"),
         const SizedBox(height: 8),
         const Divider(height: 1, color: Colors.white),
-        _detailText("响应头", item.queryHeader.toString()),
+        _detailText("响应头", "\r\n${_convert(item.queryHeader, 2)}"),
         _detailText("响应时间", "${item.queryTime.toString()}ms"),
         _detailText("响应参数", "\r\n${_convert(item.data, 2)}"),
       ]),
@@ -436,7 +442,7 @@ String _convert(dynamic object, int deep, {bool isObject = false}) {
   if (object is Map) {
     var list = object.keys.toList();
     if (!isObject) {//如果map来自某个字段，则不需要显示缩进
-      buffer.write("${getDeepSpace(deep)}");
+      buffer.write(getDeepSpace(deep));
     }
     buffer.write("{");
     if (list.isEmpty) {//当map为空，直接返回‘}’
@@ -456,7 +462,7 @@ String _convert(dynamic object, int deep, {bool isObject = false}) {
     }
   } else if (object is List) {
     if (!isObject) {//如果list来自某个字段，则不需要显示缩进
-      buffer.write("${getDeepSpace(deep)}");
+      buffer.write(getDeepSpace(deep));
     }
     buffer.write("[");
     if (object.isEmpty) {//当list为空，直接返回‘]’

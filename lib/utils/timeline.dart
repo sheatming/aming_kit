@@ -7,6 +7,7 @@
  * @Date: 2018/10/3
  */
 
+import 'common.dart';
 import 'date.dart';
 
 /// (xx)Configurable output.
@@ -220,37 +221,35 @@ class TimelineUtil {
   static String format(
       int ms, {
         int? locTimeMs,
-        String? locale,
-        DayFormat? dayFormat,
+        String? locale = 'en',
+        DayFormat? dayFormat = DayFormat.Common,
       }) {
-    int _locTimeMs = locTimeMs ?? DateTime.now().millisecondsSinceEpoch;
-    String _locale = locale ?? 'en';
-    TimelineInfo _info = _timelineInfoMap[_locale] ?? EnInfo();
-    DayFormat _dayFormat = dayFormat ?? DayFormat.Common;
+    if(!isNotNull(locTimeMs))locTimeMs = DateTime.now().millisecondsSinceEpoch;
+    TimelineInfo info = _timelineInfoMap[locale] ?? EnInfo();
 
-    int elapsed = _locTimeMs - ms;
+    int elapsed = locTimeMs! - ms;
     String suffix;
     if (elapsed < 0) {
-      suffix = _info.suffixAfter();
+      suffix = info.suffixAfter();
       // suffix after is empty. user just now.
       if (suffix.isNotEmpty) {
         elapsed = elapsed.abs();
-        _dayFormat = DayFormat.Simple;
+        dayFormat = DayFormat.Simple;
       } else {
-        return _info.lessThanOneMinute();
+        return info.lessThanOneMinute();
       }
     } else {
-      suffix = _info.suffixAgo();
+      suffix = info.suffixAgo();
     }
 
     String timeline;
-    if (_info.customYesterday().isNotEmpty &&
-        DateUtil.isYesterdayByMs(ms, _locTimeMs)) {
-      return _getYesterday(ms, _info, _dayFormat);
+    if (info.customYesterday().isNotEmpty &&
+        DateUtil.isYesterdayByMs(ms, locTimeMs)) {
+      return _getYesterday(ms, info, dayFormat!);
     }
 
-    if (!DateUtil.yearIsEqualByMs(ms, _locTimeMs)) {
-      timeline = _getYear(ms, _dayFormat);
+    if (!DateUtil.yearIsEqualByMs(ms, locTimeMs)) {
+      timeline = _getYear(ms, dayFormat!);
       if (timeline.isNotEmpty) return timeline;
     }
 
@@ -260,26 +259,26 @@ class TimelineUtil {
     final num days = hours / 24;
 
     if (seconds < 90) {
-      timeline = _info.oneMinute(1);
-      if (suffix != _info.suffixAfter() &&
-          _info.lessThanOneMinute().isNotEmpty &&
-          seconds < _info.maxJustNowSecond()) {
-        timeline = _info.lessThanOneMinute();
+      timeline = info.oneMinute(1);
+      if (suffix != info.suffixAfter() &&
+          info.lessThanOneMinute().isNotEmpty &&
+          seconds < info.maxJustNowSecond()) {
+        timeline = info.lessThanOneMinute();
         suffix = '';
       }
     } else if (minutes < 60) {
-      timeline = _info.minutes(minutes.round());
+      timeline = info.minutes(minutes.round());
     } else if (minutes < 90) {
-      timeline = _info.anHour(1);
+      timeline = info.anHour(1);
     } else if (hours < 24) {
-      timeline = _info.hours(hours.round());
+      timeline = info.hours(hours.round());
     } else {
-      if ((days.round() == 1 && _info.keepOneDay() == true) ||
-          (days.round() == 2 && _info.keepTwoDays() == true)) {
-        _dayFormat = DayFormat.Simple;
+      if ((days.round() == 1 && info.keepOneDay() == true) ||
+          (days.round() == 2 && info.keepTwoDays() == true)) {
+        dayFormat = DayFormat.Simple;
       }
-      timeline = _formatDays(ms, days.round(), _info, _dayFormat);
-      suffix = (_dayFormat == DayFormat.Simple ? suffix : '');
+      timeline = _formatDays(ms, days.round(), info, dayFormat!);
+      suffix = (dayFormat == DayFormat.Simple ? suffix : '');
     }
     return timeline + suffix;
   }
@@ -298,21 +297,21 @@ class TimelineUtil {
         String languageCode = 'en',
         bool short = false,
       }) {
-    int _locTimeMs = locMs ?? DateTime.now().millisecondsSinceEpoch;
-    int elapsed = _locTimeMs - ms;
+    int locTimeMs = locMs ?? DateTime.now().millisecondsSinceEpoch;
+    int elapsed = locTimeMs - ms;
     if (elapsed < 0) {
       return DateUtil.formatDateMs(ms, format: formatToday);
     }
 
-    if (DateUtil.isToday(ms, locMs: _locTimeMs)) {
+    if (DateUtil.isToday(ms, locMs: locTimeMs)) {
       return DateUtil.formatDateMs(ms, format: formatToday);
     }
 
-    if (DateUtil.isYesterdayByMs(ms, _locTimeMs)) {
+    if (DateUtil.isYesterdayByMs(ms, locTimeMs)) {
       return languageCode == 'zh' ? '昨天' : 'Yesterday';
     }
 
-    if (DateUtil.isWeek(ms, locMs: _locTimeMs)) {
+    if (DateUtil.isWeek(ms, locMs: locTimeMs)) {
       return DateUtil.getWeekdayByMs(ms,
           languageCode: languageCode, short: short);
     }
@@ -329,7 +328,7 @@ class TimelineUtil {
       ) {
     return info.customYesterday() +
         (dayFormat == DayFormat.Full
-            ? (' ' + DateUtil.formatDateMs(ms, format: 'HH:mm'))
+            ? (' ${DateUtil.formatDateMs(ms, format: 'HH:mm')}')
             : '');
   }
 

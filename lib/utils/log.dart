@@ -20,32 +20,32 @@ class OuiLog {
     _oDebugMode = value;
   }
 
-  void info(Object? object, {String? tag, String? type}) => _print(object,
+  void info(object, {String? tag, String? type}) => _print(object,
       tag: tag,
       cate: LogCate.info,
       type: type
   );
-  void error(Object object, {String? tag, String? type}) => _print(object,
+  void error(object, {String? tag, String? type}) => _print(object,
       tag: tag,
       cate: LogCate.error,
       type: type
   );
-  void warn(Object object, {String? tag, String? type}) => _print(object,
+  void warn(object, {String? tag, String? type}) => _print(object,
       tag: tag,
       cate: LogCate.warn,
       type: type
   );
-  void debug(Object? object, {String? tag, String? type}) => _print(object,
+  void debug(object, {String? tag, String? type}) => _print(object,
       tag: tag,
       cate: LogCate.debug,
       type: type
   );
-  void http(Object? object, {String? tag, String? type}) => _print(object,
+  void http(object, {String? tag, String? type}) => _print(object,
     tag: tag,
     cate: LogCate.http,
     type: type,
   );
-  void system(Object? object, {String? tag, String? type}) => _print(object,
+  void system(object, {String? tag, String? type}) => _print(object,
     tag: tag,
     cate: LogCate.system,
     type: type,
@@ -85,7 +85,7 @@ class OuiLog {
     var _stc = _st.first.replaceAll("#0   ", " ");
     if(kDebugMode){
       print("$_tag=======================================================================");
-      print("$_tag${isNotNull(tag) ? "$tag >>> " : ""}${_stc.removeFirst()} ⬇️");
+      print("$_tag${isNotNull(tag) ? "$tag >>> " : ""}${_stc.removeFirst} ⬇️");
 
       List objArr = object.toString().split("#br#");
       for (var element in objArr) {
@@ -100,7 +100,7 @@ class OuiLog {
         tag: tag,
         content: object.toString().replaceAll("#br#", "\r\n"),
         cate: cate,
-        path: _stc.removeFirst(),
+        path: _stc.removeFirst,
       ));
     }
   }
@@ -158,9 +158,9 @@ class NetworkLogItem{
   final String url;
   final String method;
   final dynamic header;
-  final dynamic? queryHeader;
-  final dynamic? params;
-  final dynamic? data;
+  final dynamic queryHeader;
+  final dynamic params;
+  final dynamic data;
   final int queryTime;
   NetworkLogItem({required this.statusCode, required this.statusMessage, required this.url, this.params = "-", this.data = "-", required this.method, this.queryTime = 0, this.header, this.queryHeader = "-"});
 }

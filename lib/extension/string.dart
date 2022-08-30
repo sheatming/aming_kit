@@ -10,12 +10,20 @@ extension OtherString on String{
   double get toDouble{
     return double.parse(this);
   }
+
+  String get first{
+    return this[0];
+  }
+
+  String get last{
+    return this[length -1];
+  }
 }
 
 //删除扩展
 extension RemoveString on String {
   //删除第一个字符
-  String removeFirst(){
+  String get removeFirst{
     String tmp = "";
     for(int i=0; i<length; i++){
       if(i > 0){
@@ -26,7 +34,7 @@ extension RemoveString on String {
   }
 
   //删除最后一个字符
-  String removeLast(){
+  String get removeLast{
     String tmp = "";
     for(int i=0; i<length-1; i++){
       tmp = tmp.add(this[i]);

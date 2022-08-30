@@ -12,6 +12,7 @@ class OuiRoute {
   static Map<String, Map<String, dynamic>> params = {};
 
   // static List<String> historyRoute = [];
+  static get generator => router?.generator;
 
   static void init(Map<String, Widget> routes){
     if(!isNotNull(routes)){
@@ -26,15 +27,15 @@ class OuiRoute {
       router!.define(route,
           handler: Handler(
               handlerFunc: (BuildContext? context, Map<String, dynamic> res) {
-                String _route = "_${page.runtimeType.toString()}";
+                String route = "_${page.runtimeType.toString()}";
                 if(!isNotNull(res)) res = {};
                 if(isNotNull(context!.settings!.arguments)){
                   res['args'] = context.settings!.arguments;
                 }
-                if(isNotNull(params[_route])){
-                  params[_route] = res;
+                if(isNotNull(params[route])){
+                  params[route] = res;
                 } else {
-                  params.addAll({_route: res});
+                  params.addAll({route: res});
                 }
                 return page;
               }
@@ -48,15 +49,15 @@ class OuiRoute {
 }
 
 getParams(String field, object, {defValue, bool isArgs = false}){
-  String _route = object.runtimeType.toString();
+  String route = object.runtimeType.toString();
   // print("读取参数：$_route");
 
-  if(field == "-") return OuiRoute.params[_route];
+  if(field == "-") return OuiRoute.params[route];
 
-  if(isArgs && isNotNull(OuiRoute.params[_route]!["args"])){
-    return OuiRoute.params[_route]![field] ?? defValue ?? "";
-  } else if(isNotNull(OuiRoute.params[_route])){
-    return OuiRoute.params[_route]![field]?.first ?? defValue ?? "";
+  if(isArgs && isNotNull(OuiRoute.params[route]!["args"])){
+    return OuiRoute.params[route]![field] ?? defValue ?? "";
+  } else if(isNotNull(OuiRoute.params[route])){
+    return OuiRoute.params[route]![field]?.first ?? defValue ?? "";
   }
 
   return defValue ?? "";

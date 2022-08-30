@@ -33,7 +33,7 @@ class OuiSize {
   }
 
   static px(number){
-    if(!(_ratio is double || _ratio is double)) init(750);
+    if(!isNotNull(_ratio) || _ratio == 0) init(750);
     return number * _ratio;
   }
 

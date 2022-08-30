@@ -3,7 +3,6 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:aming_kit/aming_kit.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 // 阿明重构于 2022-04-25
@@ -24,16 +23,19 @@ class OuiApi {
   static String? _uploadUrl;
   static Map<String, dynamic> _header = {};
   static Function? _err401; //未授权登陆
+  static Function? _resultHandle;
 
   static void init({
     String? baseUrl,
     Map<String, dynamic> header = const {},
-    Function? err401
+    Function? err401,
+    Function(Response response)? resultHandle
   }) {
 
     if (isNotNull(baseUrl)) _baseUrl = baseUrl;
     if (isNotNull(header)) _header = header;
     if (isNotNull(err401)) _err401 = err401;
+    if (isNotNull(resultHandle)) _resultHandle = resultHandle;
     log.system("initialization", tag: "Dio");
     options = BaseOptions(
       connectTimeout: 10000,
@@ -43,227 +45,197 @@ class OuiApi {
     );
   }
 
-  Future<ResponseModel> get(String path, {data, Map<String, dynamic>? header, String? host, bool getFull = false}) async {
-    return await _request(
-      path,
-      method: "GET",
-      data: data,
-      header: header,
-      host: host,
-      getFull: getFull,
-    );
-  }
+  Future<ResponseModel> get(String path, {data, Map<String, dynamic>? header, String? baseUrl}) async => await _request(
+    path,
+    method: "GET",
+    data: data,
+    header: header,
+    baseUrl: baseUrl,
+  );
 
-  Future<ResponseModel> post(String path, {data, Map<String, dynamic>? header, String? host, bool getFull = false}) async {
-    return await _request(
-      path,
-      method: "POST",
-      data: data,
-      header: header,
-      host: host,
-      getFull: getFull,
-    );
-  }
+  Future<ResponseModel> post(String path, {data, Map<String, dynamic>? header, String? baseUrl}) async => await _request(
+    path,
+    method: "POST",
+    data: data,
+    header: header,
+    baseUrl: baseUrl,
+  );
 
-  Future<ResponseModel> put(String path, {data, Map<String, dynamic>? header, String? host, bool getFull = false}) async {
-    return await _request(
-      path,
-      method: "PUT",
-      data: data,
-      header: header,
-      host: host,
-      getFull: getFull,
-    );
-  }
+  Future<ResponseModel> put(String path, {data, Map<String, dynamic>? header, String? baseUrl}) async => await _request(
+    path,
+    method: "PUT",
+    data: data,
+    header: header,
+    baseUrl: baseUrl,
+  );
 
-  Future<ResponseModel> delete(String path, {data, Map<String, dynamic>? header, String? host, bool getFull = false}) async {
-    return await _request(
-      path,
-      method: "DELETE",
-      data: data,
-      header: header,
-      host: host,
-      getFull: getFull,
-    );
-  }
+  Future<ResponseModel> delete(String path, {data, Map<String, dynamic>? header, String? baseUrl}) async => await _request(
+    path,
+    method: "DELETE",
+    data: data,
+    header: header,
+    baseUrl: baseUrl,
+  );
 
   // Future<ResponseModel> upload() async{
   //
   // }
 
   Future<void> download(String url, String savePath, {
-    Function? onProgress,
+    ProgressCallback? onProgress,
     Function? onSuccess,
     Function? onFailed,
   }) async{
+    int _queryTime = DateTime.now().millisecondsSinceEpoch;
     String? dir = await getExternalCacheDirectories().then((value) => value?.first.path);
-    File file = File("$dir$savePath");
+    File file = File("$dir/$savePath");
     var dio = Dio();
     try {
 
-      Response response = await dio.get(
+      Response response = await dio.download(
         url,
-        onReceiveProgress: (received, total) {
-          if(isNotNull(onProgress)) onProgress!(received, total);
-        },
-        //Received data with List<int>
-        options: Options(
-            responseType: ResponseType.bytes,
-            followRedirects: false,
-            receiveTimeout: 0),
+        file.path,
+        onReceiveProgress: onProgress,
       );
-      var raf = file.openSync(mode: FileMode.write);
-      // response.data is List<int> type
-      raf.writeFromSync(response.data);
-      await raf.close();
-      if(await file.exists()){
-        log.http("保存完成", tag: "Dio:Download");
+
+      _pushLog(
+        requestOptions: response.requestOptions,
+        queryTime: _queryTime,
+        result: response,
+        code: response.statusCode,
+      );
+      if(response.statusCode == 200){
         if(isNotNull(onSuccess)) onSuccess!(file);
       } else {
         if(isNotNull(onFailed)) onFailed!();
       }
     } catch (e) {
-      log.http(e, tag: "Dio:Download");
+      log.error(e, tag: "Dio:Download");
       if(isNotNull(onFailed)) onFailed!();
     }
   }
 
   Future<ResponseModel> _request(
-    String path, {
-    data,
-    String method = "POST",
-    Map<String, dynamic>? header,
-    String? baseUrl,
-    String? host,
-    bool getFull = false,
-  }) async {
+      String path, {
+        data,
+        String method = "GET",
+        Map<String, dynamic>? header = const {},
+        String? baseUrl,
+      }) async {
     path = path.replaceAll("//", "/");
     BaseOptions _options = options;
-    if (isNotNull(header)) {
-      header!.forEach((key, value) {
-        _header[key] = value;
-      });
-    }
-
-    if(isNotNull(host)){
-      _options.baseUrl = host!;
-    } else if(isNotNull(_baseUrl)){
-      _options.baseUrl = _baseUrl!;
-    }
+    Map<String, dynamic> h = {};
+    if (isNotNull(_header)) h.addAll(_header);
+    if (isNotNull(header)) h.addAll(header!);
 
     _options.method = method;
-    _options.headers = _header;
-
+    _options.headers = h;
+    if (isNotNull(_baseUrl)) _options.baseUrl = _baseUrl!;
     if (isNotNull(baseUrl)) _options.baseUrl = baseUrl!;
+
+    ///避免双斜杠问题
+    if(path.first == '/' && _options.baseUrl.last == '/') path = path.removeFirst;
+
     Dio dio = Dio(_options);
 
     int _queryTime = DateTime.now().millisecondsSinceEpoch;
 
-    dio.interceptors.add(QueuedInterceptorsWrapper(onRequest: (options, handler) async {
-      final Connectivity connectivity = Connectivity();
-      var connectionStatus = await connectivity.checkConnectivity();
-      if (connectionStatus == ConnectivityResult.none) {
-        gotoNoNetWork(handler, options);
-        return;
-      }
-      return handler.next(options);
-    }, onError: (error, handler) {
+    dio.interceptors.add(QueuedInterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final Connectivity connectivity = Connectivity();
+          var connectionStatus = await connectivity.checkConnectivity();
+          if (connectionStatus == ConnectivityResult.none) {
+            gotoNoNetWork(handler, options);
+            return;
+          }
+          return handler.next(options);
+        },
+        onError: (error, handler) {
+          if (error.error is SocketException) {
+            _pushLog(
+              queryTime: _queryTime,
+              requestOptions: error.requestOptions,
+              error: error,
+              code: 503,
+            );
+            gotoNoNetWork(handler, error.requestOptions);
+            return;
+          }
+          switch (error.type) {
+            case DioErrorType.connectTimeout:
+              _pushLog(
+                queryTime: _queryTime,
+                requestOptions: error.requestOptions,
+                error: error,
+                code: 503,
+              );
+              gotoNoNetWork(handler, error.requestOptions);
+              return;
+            case DioErrorType.receiveTimeout:
+              _pushLog(
+                queryTime: _queryTime,
+                requestOptions: error.requestOptions,
+                error: error,
+                code: 503,
+              );
+              gotoNoNetWork(handler, error.requestOptions);
+              return;
+            default:
+              _pushLog(
+                queryTime: _queryTime,
+                requestOptions: error.requestOptions,
+                error: error,
+                code: 999,
+              );
+              handler.next(error);
+              break;
+          }
+        },
+        onResponse: (result, handler) {
+          int? _status = result.statusCode;
+          if (_status == 200) _status = result.data['status'] ?? 0;
 
-      if (error.error is SocketException) {
-        _pushLog(
-          queryTime: _queryTime,
-          requestOptions: error.requestOptions,
-          error: error,
-          code: 503,
-        );
-        gotoNoNetWork(handler, error.requestOptions);
-        return;
-      }
-      switch (error.type) {
-        case DioErrorType.connectTimeout:
           _pushLog(
             queryTime: _queryTime,
-            requestOptions: error.requestOptions,
-            error: error,
-            code: 503,
+            requestOptions: result.requestOptions,
+            result: result,
+            code: _status,
           );
-          gotoNoNetWork(handler, error.requestOptions);
-          return;
-        case DioErrorType.receiveTimeout:
-          _pushLog(
-            queryTime: _queryTime,
-            requestOptions: error.requestOptions,
-            error: error,
-            code: 503,
-          );
-          gotoNoNetWork(handler, error.requestOptions);
-          return;
-        default:
-          _pushLog(
-            queryTime: _queryTime,
-            requestOptions: error.requestOptions,
-            error: error,
-            code: 999,
-          );
-          handler.next(error);
-          break;
-      }
-    }, onResponse: (result, handler) {
-      int? _status = result.statusCode;
-      if (_status == 200) _status = result.data['status'] ?? 0;
-      // String _log = "🔗 ${result.requestOptions.baseUrl}${result.requestOptions.path}#br#[$_status] - ${result.statusMessage}#br#📦 ${result.requestOptions.data ?? "-"}#br#📧 ${result.data}#br#👨 ${result.requestOptions.headers}";
-      // log.http(_log);
-      // if(OuiLog.oDebugMode){
-      //   networkLog.insert(0, NetworkLogItem(
-      //     statusCode: _status ?? 0,
-      //     statusMessage: result.statusMessage ?? '-',
-      //     url: "${result.requestOptions.baseUrl}${result.requestOptions.path}",
-      //     method: result.requestOptions.method,
-      //     params: result.requestOptions.data,
-      //     data: result.data,
-      //     header: result.requestOptions.headers,
-      //     queryHeader: result.headers.map,
-      //     queryTime: DateTime.now().millisecondsSinceEpoch - _queryTime,
-      //   ));
-      // }
-
-      _pushLog(
-        queryTime: _queryTime,
-        requestOptions: result.requestOptions,
-        result: result,
-        code: _status,
-      );
 
 
-      switch (_status) {
-        case 503:
-          //通用错误
-          log.info(503, tag: "Api");
-          // showToast('网络异常,请稍后再试');
-          break;
-        case 511:
-          //封停账号
-          log.info(511, tag: "Api");
-          break;
-        case 422:
-          //归类到通用错误 记录日志
-          log.info(422, tag: "Api");
-          break;
-        case 404:
-          //无接口 跳过
+          switch (_status) {
+            case 503:
+            //通用错误
+              log.info(503, tag: "Api");
+              // showToast('网络异常,请稍后再试');
+              break;
+            case 511:
+            //封停账号
+              log.info(511, tag: "Api");
+              break;
+            case 422:
+            //归类到通用错误 记录日志
+              log.info(422, tag: "Api");
+              break;
+            case 404:
+            //无接口 跳过
+              handler.next(result);
+              return;
+            case 403:
+            //403 跳过
+              log.info(403, tag: "Api");
+              break;
+            case 401:
+            //没登录
+              if(isNotNull(_err401)) _err401!();
+              return;
+            case 200:
+              handler.next(result);
+              return;
+          }
           handler.next(result);
-          return;
-        case 401:
-          //没登录
-          if(isNotNull(_err401)) _err401!();
-          return;
-        case 200:
-          handler.next(result);
-          return;
-      }
-      handler.next(result);
-      // handler.reject(DioError(requestOptions: result.requestOptions), true);
-    }));
+          // handler.reject(DioError(requestOptions: result.requestOptions), true);
+        }));
 
     (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
       client.badCertificateCallback = (cert, host, port) {
@@ -276,90 +248,74 @@ class OuiApi {
       path += "?${await getUrlParamsByMap(data)}";
     }
     var result = await dio.request(path, data: data);
-    return await _handleResponse(result, getFull);
+    return await _handleResponse(result);
   }
 
-  Future<ResponseModel> _handleResponse(Response response, bool getFull) async {
-    ResponseModel _responseModel = ResponseModel(response.statusMessage, response.statusCode, response.data, response.headers.map);
-    switch(response.statusCode){
-      case 200:
-        var _data = Map<String, dynamic>.from(response.data);
-        if(isNotNull(_data) && _data['status'] == 200){
-          return ResponseModel(_responseModel.data['message'], _responseModel.data['status'], getFull ? _data : _data['data'], response.headers.map);
-        } else {
-          return ResponseModel(_responseModel.data['message'], _responseModel.data['status'], _data, response.headers.map);
-        }
-      default:
-        return _responseModel;
+  Future<ResponseModel> _handleResponse(Response response) async {
+    ResponseModel responseModel = ResponseModel(response.statusMessage, response.statusCode, response.data, response.headers.map);
+    if(isNotNull(_resultHandle)) {
+      return _resultHandle!(response);
+    } else {
+      return responseModel;
     }
   }
 
   Future<String> getUrlParamsByMap(Map<String, dynamic> params) async {
-    List<String> _urlArr = [];
+    List<String> urlArr = [];
     params.forEach((key, value) {
-      _urlArr.add("$key=$value");
+      urlArr.add("$key=$value");
     });
 
-    return _urlArr.join("&");
+    return urlArr.join("&");
   }
 
-  void gotoNoNetWork(handler, requestOptions) {
+  void gotoNoNetWork(handler, requestOptions) => handler.resolve(Response(
+    statusMessage: "请求超时",
+    statusCode: 503,
+    requestOptions: requestOptions,
+  ));
 
-    handler.resolve(Response(
-      statusMessage: "请求超时",
-      statusCode: 503,
-      data: {
-        "status": 503,
-        "message": "请求超时"
-      },
-        requestOptions: requestOptions,
-    ));
-    // Future.delayed(Duration(milliseconds: 1000), () {
-    //   BuildContext context = Global.navigatorKey.currentState.overlay.context;
-    //   if (Global.routerHistory.last != AppRoute.nonetwork.index) {
-    //     Future.delayed(Duration.zero, () => Navigator.of(context).pushReplacementNamed(AppRoute.nonetwork.index));
-    //   }
-    // });
-  }
+  void headerAdd(Map<String, dynamic> header) => _header.addAll(header);
+  void headerRemove(String key) => _header.remove(key);
 }
 
 class ResponseModel<T> {
   ResponseModel(this.message, this.status, this.data, this.header);
 
-  final T data;
+  final T? data;
   final String? message;
   final int? status;
   final Map header;
 }
 
 
-class ApiResponse {
-  final String? message;
-  final dynamic status;
-  final dynamic data;
-  final Response response;
-
-  ApiResponse(
-      this.message,
-      this.status,
-      this.data,
-      this.response,
-      );
-
-  factory ApiResponse.fromJson(Response response) {
-    return _$ApiResponseFromJson(response);
-  }
-}
-
-
-ApiResponse _$ApiResponseFromJson(Response responsen) {
-  return ApiResponse(
-      responsen.data['message'] as String?,
-      responsen.data['status'],
-      responsen.data['data'],
-      responsen
-  );
-}
+// class ApiResponse {
+//   final String? message;
+//   final dynamic status;
+//   final dynamic data;
+//   final Response response;
+//
+//   ApiResponse(
+//       this.message,
+//       this.status,
+//       this.data,
+//       this.response,
+//       );
+//
+//   factory ApiResponse.fromJson(Response response) {
+//     return _$ApiResponseFromJson(response);
+//   }
+// }
+//
+//
+// ApiResponse _$ApiResponseFromJson(Response responsen) {
+//   return ApiResponse(
+//       responsen.data['message'] as String?,
+//       responsen.data['status'],
+//       responsen.data['data'],
+//       responsen
+//   );
+// }
 
 void _pushLog({
   int queryTime = 0,
@@ -370,10 +326,10 @@ void _pushLog({
 }){
 
 
-  int? _status = code ?? result?.statusCode ?? result?.data['status'] ?? 0;
+  int? status = code ?? result?.statusCode ?? result?.data['status'] ?? 0;
   String _log = "🔗 ${requestOptions.method}: "
       "${requestOptions.baseUrl}${requestOptions.path}#br#";
-  if(isNotNull(result)) _log += "[$_status] - ${result?.statusMessage ?? "-"}#br#";
+  if(isNotNull(result)) _log += "[$status] - ${result?.statusMessage ?? "-"}#br#";
   if(isNotNull(error)) _log += "${error?.error ?? "-"}#br#";
 
   _log += "📦 ${requestOptions.data ?? "-"}#br#";
@@ -383,7 +339,7 @@ void _pushLog({
   log.http(_log);
   if(OuiLog.oDebugMode){
     networkLog.insert(0, NetworkLogItem(
-      statusCode: _status ?? -500,
+      statusCode: status ?? -500,
       statusMessage: isNotNull(error) ? "${error?.error ?? "-"}" : (result?.statusMessage ?? '-'),
       url: "${requestOptions.baseUrl}${requestOptions.path}",
       method: requestOptions.method,

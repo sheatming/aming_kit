@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:aming_kit/aming_kit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'common.dart';
 
 enum CacheType {
   string,

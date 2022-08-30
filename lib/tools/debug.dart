@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:aming_kit/aming_kit.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'console.dart';
 
@@ -191,8 +191,12 @@ class _OuiDevTools extends State<OuiDevTools> {
       data: Theme.of(context).copyWith(
         highlightColor: Colors.transparent,
         appBarTheme: AppBarTheme.of(context).copyWith(
-          brightness: Brightness.dark,
+          // brightness: Brightness.dark,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarBrightness: Brightness.dark,
+          )
         ),
+
       ),
       child: AnimatedPositioned(
         left: isOpen == true ? (OuiSize.screenWidth() / 2 - 125) : offset?.dx,

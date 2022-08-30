@@ -6,8 +6,8 @@ export 'package:tinycolor2/tinycolor2.dart';
 extension ExtColor on Color? {
   Color antiWhite({Color? lightColor = Colors.white, Color? darkColor = Colors.black, double threshold = 200}) {
     if(this == null) return Colors.transparent;
-    bool _get = TinyColor.fromColor(this!).getBrightness() > threshold;
-    return _get
+    bool get = TinyColor.fromColor(this!).getBrightness() > threshold;
+    return get
         ? darkColor ?? TinyColor.fromColor(this!).darken(7).color
         : lightColor ?? TinyColor.fromColor(this!).lighten(7).color;
   }
