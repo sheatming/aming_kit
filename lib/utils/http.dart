@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:aming_kit/aming_kit.dart';
 import 'package:path_provider/path_provider.dart';
 
+export 'package:dio/dio.dart';
 // 阿明重构于 2022-04-25
 
 OuiApi api = OuiApi();
@@ -45,36 +46,40 @@ class OuiApi {
     );
   }
 
-  Future<ResponseModel> get(String path, {data, Map<String, dynamic>? header, String? baseUrl}) async => await _request(
+  Future<ResponseModel> get(String path, {data, Map<String, dynamic>? header, String? baseUrl, bool? skipResultHandle}) async => await _request(
     path,
     method: "GET",
     data: data,
     header: header,
     baseUrl: baseUrl,
+    skipResultHandle: skipResultHandle ?? false,
   );
 
-  Future<ResponseModel> post(String path, {data, Map<String, dynamic>? header, String? baseUrl}) async => await _request(
+  Future<ResponseModel> post(String path, {data, Map<String, dynamic>? header, String? baseUrl, bool? skipResultHandle}) async => await _request(
     path,
     method: "POST",
     data: data,
     header: header,
     baseUrl: baseUrl,
+    skipResultHandle: skipResultHandle ?? false,
   );
 
-  Future<ResponseModel> put(String path, {data, Map<String, dynamic>? header, String? baseUrl}) async => await _request(
+  Future<ResponseModel> put(String path, {data, Map<String, dynamic>? header, String? baseUrl, bool? skipResultHandle}) async => await _request(
     path,
     method: "PUT",
     data: data,
     header: header,
     baseUrl: baseUrl,
+    skipResultHandle: skipResultHandle ?? false,
   );
 
-  Future<ResponseModel> delete(String path, {data, Map<String, dynamic>? header, String? baseUrl}) async => await _request(
+  Future<ResponseModel> delete(String path, {data, Map<String, dynamic>? header, String? baseUrl, bool? skipResultHandle}) async => await _request(
     path,
     method: "DELETE",
     data: data,
     header: header,
     baseUrl: baseUrl,
+    skipResultHandle: skipResultHandle ?? false,
   );
 
   // Future<ResponseModel> upload() async{
@@ -87,7 +92,7 @@ class OuiApi {
     Function? onFailed,
   }) async{
     int _queryTime = DateTime.now().millisecondsSinceEpoch;
-    String? dir = await getExternalCacheDirectories().then((value) => value?.first.path);
+    String? dir = await getApplicationDocumentsDirectory().then((value) => value.path);
     File file = File("$dir/$savePath");
     var dio = Dio();
     try {
@@ -121,6 +126,7 @@ class OuiApi {
         String method = "GET",
         Map<String, dynamic>? header = const {},
         String? baseUrl,
+        bool skipResultHandle = false,
       }) async {
     path = path.replaceAll("//", "/");
     BaseOptions _options = options;
@@ -135,6 +141,7 @@ class OuiApi {
 
     ///避免双斜杠问题
     if(path.first == '/' && _options.baseUrl.last == '/') path = path.removeFirst;
+    if(path.first != '/' && _options.baseUrl.last != '/') path = "/$path";
 
     Dio dio = Dio(_options);
 
@@ -195,14 +202,6 @@ class OuiApi {
           int? _status = result.statusCode;
           if (_status == 200) _status = result.data['status'] ?? 0;
 
-          _pushLog(
-            queryTime: _queryTime,
-            requestOptions: result.requestOptions,
-            result: result,
-            code: _status,
-          );
-
-
           switch (_status) {
             case 503:
             //通用错误
@@ -234,7 +233,6 @@ class OuiApi {
               return;
           }
           handler.next(result);
-          // handler.reject(DioError(requestOptions: result.requestOptions), true);
         }));
 
     (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
@@ -243,16 +241,41 @@ class OuiApi {
       };
       return;
     };
-
     if (method == "GET" && isNotNull(data)) {
-      path += "?${await getUrlParamsByMap(data)}";
+      path += "?${Map.from(data).toUrl}";
     }
-    var result = await dio.request(path, data: data);
-    return await _handleResponse(result);
-  }
+    try{
+      var result = await dio.request(path, data: data);
+      _pushLog(
+        queryTime: _queryTime,
+        requestOptions: result.requestOptions,
+        result: result,
+        code: result.statusCode.toString().toInt,
+      );
+      return await _handleResponse(result, skipResultHandle: skipResultHandle);
+    } on DioError catch (e){
 
-  Future<ResponseModel> _handleResponse(Response response) async {
+      Response _response = Response(
+        statusCode: e.response?.statusCode,
+        requestOptions: e.requestOptions,
+        statusMessage: e.response?.statusMessage,
+        headers: e.response?.headers,
+        data: e.response?.data,
+      );
+
+      _pushLog(
+        queryTime: _queryTime,
+        requestOptions: _response.requestOptions,
+        result: _response,
+        code: _response.statusCode,
+      );
+      return await _handleResponse(_response, skipResultHandle: true);
+    }
+
+  }
+  Future<ResponseModel> _handleResponse(Response response, {bool skipResultHandle = false}) async {
     ResponseModel responseModel = ResponseModel(response.statusMessage, response.statusCode, response.data, response.headers.map);
+    if(skipResultHandle == true) return responseModel;
     if(isNotNull(_resultHandle)) {
       return _resultHandle!(response);
     } else {

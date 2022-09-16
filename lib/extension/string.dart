@@ -1,9 +1,12 @@
+import '../utils/common.dart';
+
 extension OtherString on String{
   String add(object){
     return "${this}$object";
   }
 
   int get toInt{
+    if(!isNotNull(this)) return 0;
     return int.parse(this);
   }
 
@@ -12,11 +15,20 @@ extension OtherString on String{
   }
 
   String get first{
-    return this[0];
+    if(length > 0){
+      return this[0];
+    } else {
+      return this;
+    }
+
   }
 
   String get last{
     return this[length -1];
+  }
+
+  bool get isNull{
+    return !isNotNull(this);
   }
 }
 

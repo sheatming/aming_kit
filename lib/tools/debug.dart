@@ -77,7 +77,6 @@ class OuiDevTools extends StatefulWidget {
     OuiCache.setBool("runDebug", true);
     openOverlay("devTools", OuiDevTools(
       option1: option1 ?? OuiDevOption(Icons.construction_outlined, "控制台", onClick: isNotNull(OuiGlobal.globalContext) ? () => showModalBottomSheet(
-
         backgroundColor: Colors.transparent,
         context: OuiGlobal.globalContext!,
         builder: (BuildContext context){
@@ -88,11 +87,21 @@ class OuiDevTools extends StatefulWidget {
       option3: option3 ?? OuiDevOption(Icons.warning, ""),
       option4: option4 ?? OuiDevOption(Icons.warning, ""),
       option5: option5 ?? OuiDevOption(Icons.warning, ""),
-      option6: option6 ?? OuiDevOption(Icons.warning, ""),
+      option6: option6 ?? OuiDevOption(Icons.rotate_left, isNotNull(OuiGlobal.globalContext) ? "重启应用" : "退出应用", onClick: (){
+        if(isNotNull(OuiGlobal.globalContext) && OuiGlobal.initMaterialApp){
+          OuiMaterialApp.restartApp();
+        } else {
+          exit(0);
+        }
+      }),
       option7: option7 ?? OuiDevOption(Icons.cleaning_services, "清空缓存", onClick: (){
         OuiCache.clear();
         OuiCache.setBool("runDebug", true);
-        exit(0);
+        if(isNotNull(OuiGlobal.globalContext) && OuiGlobal.initMaterialApp){
+          OuiMaterialApp.restartApp();
+        } else {
+          exit(0);
+        }
       }),
       option8: option8 ?? OuiDevOption(Icons.cached, "重启工具", onClick: (){
         open(

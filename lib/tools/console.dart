@@ -241,27 +241,27 @@ class _ConsoleLogState extends State<_ConsoleLog> {
   }
 
   Widget _statusText(LogCate cate){
-    Color _backgroundColor = Colors.redAccent;
+    Color backgroundColor = Colors.redAccent;
     switch(cate){
       case LogCate.debug:
-        _backgroundColor = Colors.blue;
+        backgroundColor = Colors.blue;
         break;
       case LogCate.error:
-        _backgroundColor = Colors.redAccent;
+        backgroundColor = Colors.redAccent;
         break;
       case LogCate.warn:
-        _backgroundColor = Colors.orangeAccent;
+        backgroundColor = Colors.orangeAccent;
         break;
       case LogCate.system:
-        _backgroundColor = Colors.purple;
+        backgroundColor = Colors.purple;
         break;
       default:
-        _backgroundColor = Colors.black38;
+        backgroundColor = Colors.black38;
         break;
     }
     return Container(
       decoration: BoxDecoration(
-        color: _backgroundColor,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(3),
       ),
       padding: const EdgeInsets.symmetric(
@@ -270,7 +270,7 @@ class _ConsoleLogState extends State<_ConsoleLog> {
       ),
       child: Text(cate.toString().replaceAll("LogCate.", "").toUpperCase(), style: TextStyle(
         fontSize: 12,
-        color: _backgroundColor.antiWhite(),
+        color: backgroundColor.antiWhite(),
       )),
     );
   }
@@ -394,18 +394,18 @@ class _NetworkLogState extends State<_NetworkLog> {
   }
 
   Widget _statusText(int code){
-    Color _backgroundColor = Colors.redAccent;
+    Color backgroundColor = Colors.redAccent;
     switch(code){
       case 200:
-        _backgroundColor = Colors.lightGreen;
+        backgroundColor = Colors.lightGreen;
         break;
       case 0:
-        _backgroundColor = Colors.black38;
+        backgroundColor = Colors.black38;
         break;
     }
     return Container(
       decoration: BoxDecoration(
-        color: _backgroundColor,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(3),
       ),
       padding: const EdgeInsets.symmetric(
@@ -414,7 +414,7 @@ class _NetworkLogState extends State<_NetworkLog> {
       ),
       child: Text("$code", style: TextStyle(
         fontSize: 12,
-        color: _backgroundColor.antiWhite(),
+        color: backgroundColor.antiWhite(),
       )),
     );
   }

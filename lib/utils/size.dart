@@ -21,9 +21,9 @@ class OuiSize {
   static final double _pixelRatio = mediaQuery.devicePixelRatio;
   static double _ratio = 0;
   static double get ratio => _ratio;
-  static init([double number = 750]){
+  static init([double? number = 750]){
     mediaQuery = MediaQueryData.fromWindow(window);
-    double uiWidth = number;
+    double uiWidth = number!;
     _ratio = _width / uiWidth;
     log.system("initialization", tag: "Size");
   }

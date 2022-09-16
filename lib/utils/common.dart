@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 bool isNotNull(object){
   if(object == null) return false;
   if(object == "null") return false;
+  if(object == "false") return false;
+  if(object == false) return false;
   if(object == "") return false;
   if(object == {}) return false;
   if(object.toString() == "{}") return false;
