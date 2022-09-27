@@ -1,8 +1,5 @@
 import 'dart:io';
 import 'package:aming_kit/aming_kit.dart';
-import 'package:flutter/material.dart';
-import 'package:fluro/fluro.dart';
-
 import '../tools/console.dart';
 
 export 'package:fluro/fluro.dart';
@@ -100,7 +97,7 @@ getArgs(object, {defValue}){
   if(isNotNull(OuiRoute.params[_route]) && isNotNull(OuiRoute.params[_route]!["args"])){
     return OuiRoute.params[_route]!["args"] ?? defValue;
   } else {
-    return defValue ?? null;
+    return defValue;
   }
 }
 

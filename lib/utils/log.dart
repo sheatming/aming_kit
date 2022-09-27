@@ -101,6 +101,7 @@ class OuiLog {
         content: object.toString().replaceAll("#br#", "\r\n"),
         cate: cate,
         path: _stc.removeFirst,
+        stackTrace: StackTrace.current,
       ));
     }
   }
@@ -114,7 +115,8 @@ class ConsoleLogItem{
   final String content;
   final String path;
   final LogCate cate;
-  ConsoleLogItem({this.tag, required this.content, required this.cate, required this.path});
+  final StackTrace? stackTrace;
+  ConsoleLogItem({this.tag, required this.content, required this.cate, required this.path, this.stackTrace});
 }
 
 

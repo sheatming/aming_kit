@@ -1,7 +1,6 @@
 import 'package:aming_kit/aming_kit.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/services.dart';
 
 class OuiConsole extends StatefulWidget {
   const OuiConsole({Key? key}) : super(key: key);
@@ -16,49 +15,104 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     super.initState();
   }
 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          titleTextStyle: const TextStyle(
-              color: Colors.black
-          ),
-          title: const Text("控制台"),
-          bottom: TabBar(
-            indicatorWeight: 8.px,
-            indicatorSize: TabBarIndicatorSize.tab,
-            isScrollable: true,
-            labelColor: Theme.of(context).primaryColor,
-            indicatorColor: Theme.of(context).primaryColor,
-            unselectedLabelColor: Colors.black,
-            controller: _tabController,
-            padding: const EdgeInsets.only(
-              top: 1,
-              bottom: 1,
+    return Padding(
+      padding: EdgeInsets.only(
+        top: OuiSize.statusBarHeight() + OuiSize.toolBarHeight(),
+      ),
+      child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            centerTitle: true,
+            titleTextStyle: TextStyle(
+                color: Theme.of(context).primaryColor.antiWhite(
+                    lightColor: Colors.white,
+                    darkColor: Colors.black
+                ),
             ),
-            tabs: const [
-              Tab(child: Text("Device")),
-              Tab(child: Text("Console")),
-              Tab(child: Text("Network")),
-            ],
+            title: const Text("控制台"),
+            bottom: TabBar(
+              indicatorWeight: 8.px,
+              indicatorSize: TabBarIndicatorSize.tab,
+              isScrollable: true,
+              labelColor: Theme.of(context).primaryColor,
+              indicatorColor: Theme.of(context).primaryColor,
+              unselectedLabelColor: Theme.of(context).primaryColor.antiWhite(
+                lightColor: Colors.white,
+                darkColor: Colors.black
+              ),
+              controller: _tabController,
+              padding: const EdgeInsets.only(
+                top: 0,
+                bottom: 0,
+              ),
+              tabs: const [
+                Tab(child: Text("APP")),
+                Tab(child: Text("Device")),
+                Tab(child: Text("Console")),
+                Tab(child: Text("Network")),
+              ],
+            ),
           ),
-        ),
-        body: TabBarView(
-          controller: _tabController,
-          children: const [
-            _DeviceInfo(),
-            _ConsoleLog(),
-            _NetworkLog(),
-          ],
-        )
+          body: Padding(
+            padding: EdgeInsets.only(
+              bottom: OuiSize.touchBarHeight(),
+            ),
+            child: TabBarView(
+              controller: _tabController,
+              children: const [
+                _APPInfo(),
+                _DeviceInfo(),
+                _ConsoleLog(),
+                _NetworkLog(),
+              ],
+            ),
+          )
 
+      ),
+    );
+  }
+}
+
+class _APPInfo extends StatefulWidget {
+  const _APPInfo({Key? key}) : super(key: key);
+
+  @override
+  State<_APPInfo> createState() => _APPInfoState();
+}
+
+class _APPInfoState extends State<_APPInfo> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xfffafafa),
+      ),
+      child: ListView(
+        padding: const EdgeInsets.only(
+            top: 10
+        ),
+        children: [
+          _infoItem("APP名称", OuiApp?.packageInfo?.appName),
+          _infoItem("包名", OuiApp?.packageInfo?.packageName),
+          _infoItem("版本号", OuiApp?.packageInfo?.version),
+          _infoItem("构建号", OuiApp?.packageInfo?.buildNumber),
+          _infoItem("文档路径", OuiApp?.getAppDocumentDir),
+          _infoItem("支持路径", OuiApp?.getAppSupportDir),
+          _infoItem("临时路径", OuiApp?.getTemporaryDir),
+        ],
+      ),
     );
   }
 }
@@ -82,6 +136,8 @@ class _DeviceInfoState extends State<_DeviceInfo> {
   }
 
   void _initDeviceInfo() async {
+    await OuiDevice.init();
+
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     if(isIOS){
       iosInfo = await deviceInfo.iosInfo;
@@ -102,45 +158,18 @@ class _DeviceInfoState extends State<_DeviceInfo> {
           top: 10
         ),
         children: [
-          if(isIOS)
-            Column(
-              children: const [
-
-              ],
-            ),
-          if(isAndroid && isNotNull(androidInfo))
-            Column(
-              children: [
-                _infoItem("品牌", androidInfo?.brand),
-                _infoItem("型号", androidInfo?.model),
-                _infoItem("制造商", androidInfo?.manufacturer),
-                _infoItem("设备ID", androidInfo?.id),
-                _infoItem("AndroidSDK版本", androidInfo?.version.sdkInt),
-                _infoItem("物理设备", androidInfo?.isPhysicalDevice),
-                _infoItem("屏幕尺寸", "${OuiSize.mediaQuery.size.height}/${OuiSize.mediaQuery.size.width}"),
-                _infoItem("设备像素比", "${OuiSize.mediaQuery.devicePixelRatio}/${OuiSize.ratio}"),
-              ],
-            ),
+          _infoItem("品牌", OuiDevice.brand),
+          _infoItem("型号", OuiDevice.model),
+          _infoItem("UUID", OuiDevice.uuid),
+          _infoItem("物理设备", OuiDevice.isPhysicalDevice),
+          _infoItem("系统版本", OuiDevice.osVersion),
+          _infoItem("屏幕尺寸", "h:${OuiSize.mediaQuery.size.height}  w:${OuiSize.mediaQuery.size.width}"),
+          _infoItem("设备像素比", "${OuiSize.mediaQuery.devicePixelRatio}/${OuiSize.ratio}"),
         ],
       ),
     );
   }
 
-  Widget _infoItem(title, content, {bool isBorder = true}){
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-      ),
-      margin: const EdgeInsets.only(
-        bottom: 5
-      ),
-      child: ListTile(
-        dense: true,
-        title: Text(title),
-        subtitle: Text("${content ?? '-'}"),
-      ),
-    );
-  }
 }
 
 
@@ -555,3 +584,22 @@ void openDetailDialog(BuildContext context, String title, {List<Widget>? childre
       );
     }
 );
+
+Widget _infoItem(title, content, {bool isBorder = true}){
+  return Container(
+    decoration: const BoxDecoration(
+      color: Colors.white,
+    ),
+    margin: const EdgeInsets.only(
+        bottom: 5
+    ),
+    child: ListTile(
+      onLongPress: (){
+        Clipboard.setData(ClipboardData(text: "$title: $content"));
+      },
+      dense: true,
+      title: Text(title),
+      subtitle: Text("${content ?? '-'}"),
+    ),
+  );
+}

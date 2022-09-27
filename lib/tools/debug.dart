@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:aming_kit/aming_kit.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'console.dart';
@@ -77,6 +76,7 @@ class OuiDevTools extends StatefulWidget {
     OuiCache.setBool("runDebug", true);
     openOverlay("devTools", OuiDevTools(
       option1: option1 ?? OuiDevOption(Icons.construction_outlined, "控制台", onClick: isNotNull(OuiGlobal.globalContext) ? () => showModalBottomSheet(
+        isScrollControlled: true,
         backgroundColor: Colors.transparent,
         context: OuiGlobal.globalContext!,
         builder: (BuildContext context){
@@ -243,7 +243,7 @@ class _OuiDevTools extends State<OuiDevTools> {
                   _opacity = 0;
                 });
               }
-            }, 1500);
+            }, time: 1500);
           },
 
           child: AnimatedCrossFade(
@@ -329,7 +329,7 @@ class _OuiDevTools extends State<OuiDevTools> {
             isOpen = false;
             _opacity = 0;
           });
-        }, 5000);
+        }, time: 5000);
       });
     }
   }

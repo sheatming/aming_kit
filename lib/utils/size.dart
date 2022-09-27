@@ -1,5 +1,4 @@
 import 'package:aming_kit/aming_kit.dart';
-import 'package:flutter/material.dart';
 import 'dart:ui';
 
 
@@ -13,6 +12,7 @@ extension SizeNumber on num{
 
 class OuiSize {
   // static MediaQueryData mediaQuery;
+  static bool initialization = false;
   static late MediaQueryData mediaQuery;
   static final double _width = mediaQuery.size.width;
   static final double _height = mediaQuery.size.height;
@@ -22,10 +22,13 @@ class OuiSize {
   static double _ratio = 0;
   static double get ratio => _ratio;
   static init([double? number = 750]){
-    mediaQuery = MediaQueryData.fromWindow(window);
-    double uiWidth = number!;
-    _ratio = _width / uiWidth;
-    log.system("initialization", tag: "Size");
+    if(!initialization){
+      mediaQuery = MediaQueryData.fromWindow(window);
+      double uiWidth = number!;
+      _ratio = _width / uiWidth;
+      initialization = true;
+      log.system("initialization design size: $uiWidth", tag: "Size");
+    }
   }
 
   static Size size(){

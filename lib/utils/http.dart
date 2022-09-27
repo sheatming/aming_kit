@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/adapter.dart';
-import 'package:dio/dio.dart';
 import 'package:aming_kit/aming_kit.dart';
-import 'package:path_provider/path_provider.dart';
 
 export 'package:dio/dio.dart';
 // 阿明重构于 2022-04-25
@@ -19,17 +17,19 @@ class OuiApi {
 
   OuiApi._internal();
 
-  static late BaseOptions options;
+  static BaseOptions? options;
   static String? _baseUrl;
   static String? _uploadUrl;
   static Map<String, dynamic> _header = {};
   static Function? _err401; //未授权登陆
   static Function? _resultHandle;
+  static bool _loading = false;
 
   static void init({
     String? baseUrl,
     Map<String, dynamic> header = const {},
     Function? err401,
+    bool? loading,
     Function(Response response)? resultHandle
   }) {
 
@@ -37,6 +37,7 @@ class OuiApi {
     if (isNotNull(header)) _header = header;
     if (isNotNull(err401)) _err401 = err401;
     if (isNotNull(resultHandle)) _resultHandle = resultHandle;
+    if (isNotNull(loading)) _loading = loading!;
     log.system("initialization", tag: "Dio");
     options = BaseOptions(
       connectTimeout: 10000,
@@ -92,10 +93,12 @@ class OuiApi {
     Function? onFailed,
   }) async{
     int _queryTime = DateTime.now().millisecondsSinceEpoch;
-    String? dir = await getApplicationDocumentsDirectory().then((value) => value.path);
+    if(!isNotNull(OuiApp.getTemporaryDir)) await OuiApp.initAppDir();
+    String? dir = OuiApp.getTemporaryDir;
     File file = File("$dir/$savePath");
     var dio = Dio();
     try {
+      log.debug(file.path, tag: "下载路径");
 
       Response response = await dio.download(
         url,
@@ -128,8 +131,9 @@ class OuiApi {
         String? baseUrl,
         bool skipResultHandle = false,
       }) async {
+
     path = path.replaceAll("//", "/");
-    BaseOptions _options = options;
+    BaseOptions _options = options ?? BaseOptions();
     Map<String, dynamic> h = {};
     if (isNotNull(_header)) h.addAll(_header);
     if (isNotNull(header)) h.addAll(header!);
@@ -349,7 +353,7 @@ void _pushLog({
 }){
 
 
-  int? status = code ?? result?.statusCode ?? result?.data['status'] ?? 0;
+  int? status = code ?? result?.statusCode ?? 500;
   String _log = "🔗 ${requestOptions.method}: "
       "${requestOptions.baseUrl}${requestOptions.path}#br#";
   if(isNotNull(result)) _log += "[$status] - ${result?.statusMessage ?? "-"}#br#";
@@ -362,7 +366,7 @@ void _pushLog({
   log.http(_log);
   if(OuiLog.oDebugMode){
     networkLog.insert(0, NetworkLogItem(
-      statusCode: status ?? -500,
+      statusCode: status,
       statusMessage: isNotNull(error) ? "${error?.error ?? "-"}" : (result?.statusMessage ?? '-'),
       url: "${requestOptions.baseUrl}${requestOptions.path}",
       method: requestOptions.method,

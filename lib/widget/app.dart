@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:aming_kit/aming_kit.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-import '../utils/global.dart';
-import '../utils/router.dart';
-import '../utils/size.dart';
 
 class OuiMaterialApp extends StatefulWidget {
   const OuiMaterialApp({Key? key,
@@ -43,12 +41,18 @@ class _OuiMaterialApp extends State<OuiMaterialApp> {
 
   @override
   void initState() {
-    //渲染前
-    OuiGlobal.initMaterialApp = true;
-    OuiRoute.init(widget.routes);
     OuiSize.init(widget.designWidthSize);
+    //渲染前
+    initApp();
     super.initState();
     //渲染后
+  }
+
+  void initApp() async{
+    OuiGlobal.initMaterialApp = true;
+    OuiRoute.init(widget.routes);
+    OuiApp.initAppDir();
+    OuiApp.initPackageInfo();
   }
 
   @override
@@ -62,6 +66,7 @@ class _OuiMaterialApp extends State<OuiMaterialApp> {
     setState(() {
       appKey = UniqueKey();
     });
+    initApp();
   }
 
   @override
@@ -77,7 +82,9 @@ class _OuiMaterialApp extends State<OuiMaterialApp> {
         supportedLocales: widget.supportedLocales,
         localizationsDelegates: widget.localizationsDelegates,
         theme: widget.theme,
-        builder: widget.builder,
+        builder: EasyLoading.init(
+          builder: widget.builder,
+        ),
       ),
     );
   }
