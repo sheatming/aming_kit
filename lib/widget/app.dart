@@ -1,11 +1,11 @@
 import 'package:aming_kit/aming_kit.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
+final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
 class OuiMaterialApp extends StatefulWidget {
   const OuiMaterialApp({Key? key,
     this.routes,
-    this.designWidthSize = 750,
     this.home,
     this.debugShowCheckedModeBanner,
     this.supportedLocales = const <Locale>[Locale('en', 'US')],
@@ -13,10 +13,10 @@ class OuiMaterialApp extends StatefulWidget {
     this.theme,
     this.builder,
     this.title = '',
+    this.navigatorObservers,
   }) : super(key: key);
 
   final Map<String, Widget>? routes;
-  final double? designWidthSize;
   final Widget? home;
   final bool? debugShowCheckedModeBanner;
   final Iterable<Locale> supportedLocales;
@@ -24,6 +24,7 @@ class OuiMaterialApp extends StatefulWidget {
   final ThemeData? theme;
   final TransitionBuilder? builder;
   final String title;
+  final List<NavigatorObserver>? navigatorObservers;
 
 
   static void restartApp({BuildContext? context}) {
@@ -41,7 +42,7 @@ class _OuiMaterialApp extends State<OuiMaterialApp> {
 
   @override
   void initState() {
-    OuiSize.init(widget.designWidthSize);
+    // OuiSize.init(widget.designWidthSize);
     //渲染前
     initApp();
     super.initState();
@@ -76,6 +77,11 @@ class _OuiMaterialApp extends State<OuiMaterialApp> {
       child: MaterialApp(
         title: widget.title,
         navigatorKey: OuiGlobal.navigatorKey,
+        navigatorObservers: [
+          routeObserver,
+          if(isNotNull(widget.navigatorObservers))
+            ...widget.navigatorObservers!.map((e) => e).toList(),
+        ],
         debugShowCheckedModeBanner: widget.debugShowCheckedModeBanner ?? false,
         onGenerateRoute: OuiRoute.generator,
         home: widget.home,

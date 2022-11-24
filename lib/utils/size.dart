@@ -21,14 +21,17 @@ class OuiSize {
   static final double _pixelRatio = mediaQuery.devicePixelRatio;
   static double _ratio = 0;
   static double get ratio => _ratio;
-  static init([double? number = 750]){
-    if(!initialization){
-      mediaQuery = MediaQueryData.fromWindow(window);
-      double uiWidth = number!;
-      _ratio = _width / uiWidth;
-      initialization = true;
-      log.system("initialization design size: $uiWidth", tag: "Size");
+  static init([double? number = 750, bool isForce = false]){
+    if(!isForce){
+      if(initialization){
+        return;
+      }
     }
+    mediaQuery = MediaQueryData.fromWindow(window);
+    double uiWidth = number!;
+    _ratio = _width / uiWidth;
+    initialization = true;
+    log.system("initialization design size: $uiWidth", tag: "Size");
   }
 
   static Size size(){

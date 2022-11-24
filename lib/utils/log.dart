@@ -20,38 +20,50 @@ class OuiLog {
     _oDebugMode = value;
   }
 
-  void info(object, {String? tag, String? type}) => _print(object,
-      tag: tag,
-      cate: LogCate.info,
-      type: type
+  void info(object, {String? tag, String? type, StackTrace? stackTrace, bool? showTraceList}) => _print(object,
+    tag: tag,
+    cate: LogCate.info,
+    type: type,
+    stackTrace: stackTrace,
+    showTraceList: showTraceList,
   );
-  void error(object, {String? tag, String? type}) => _print(object,
-      tag: tag,
-      cate: LogCate.error,
-      type: type
+  void error(object, {String? tag, String? type, StackTrace? stackTrace, bool? showTraceList}) => _print(object,
+    tag: tag,
+    cate: LogCate.error,
+    type: type,
+    stackTrace: stackTrace,
+    showTraceList: showTraceList,
   );
-  void warn(object, {String? tag, String? type}) => _print(object,
-      tag: tag,
-      cate: LogCate.warn,
-      type: type
+  void warn(object, {String? tag, String? type, StackTrace? stackTrace, bool? showTraceList}) => _print(object,
+    tag: tag,
+    cate: LogCate.warn,
+    type: type,
+    stackTrace: stackTrace,
+    showTraceList: showTraceList,
   );
-  void debug(object, {String? tag, String? type}) => _print(object,
-      tag: tag,
-      cate: LogCate.debug,
-      type: type
+  void debug(object, {String? tag, String? type, StackTrace? stackTrace, bool? showTraceList}) => _print(object,
+    tag: tag,
+    cate: LogCate.debug,
+    type: type,
+    stackTrace: stackTrace,
+    showTraceList: showTraceList,
   );
-  void http(object, {String? tag, String? type}) => _print(object,
+  void http(object, {String? tag, String? type, StackTrace? stackTrace, bool? showTraceList}) => _print(object,
     tag: tag,
     cate: LogCate.http,
     type: type,
+    stackTrace: stackTrace,
+    showTraceList: showTraceList,
   );
-  void system(object, {String? tag, String? type}) => _print(object,
+  void system(object, {String? tag, String? type, StackTrace? stackTrace, bool? showTraceList}) => _print(object,
     tag: tag,
     cate: LogCate.system,
     type: type,
+    stackTrace: stackTrace,
+    showTraceList: showTraceList,
   );
 
-  static _print(Object? object, {String? tag, required LogCate cate, String? type}){
+  static _print(Object? object, {String? tag, required LogCate cate, String? type, StackTrace? stackTrace, bool? showTraceList}){
     // if(!isNotNull(_list["All"])){
     //     _list.addAll({"All": []});
     // }
@@ -80,19 +92,25 @@ class OuiLog {
         break;
     }
 
-    List<String> _st = formatStackTrace(StackTrace.current)!;
+    List<String> _st = formatStackTrace(stackTrace ?? StackTrace.current)!;
     // var _stc = _st.last.replaceAll("#${methodCount-1}   ", " ");
     var _stc = _st.first.replaceAll("#0   ", " ");
     if(kDebugMode){
-      print("$_tag=======================================================================");
-      print("$_tag${isNotNull(tag) ? "$tag >>> " : ""}${_stc.removeFirst} ⬇️");
+      debugPrint("$_tag=======================================================================");
+      debugPrint("$_tag${isNotNull(tag) ? "$tag >>> " : ""}${_stc.removeFirst} ⬇️");
 
+      object = object.toString().replaceAll("\n", "#br#");
       List objArr = object.toString().split("#br#");
       for (var element in objArr) {
-        print("$_tag${element.toString()}");
+        debugPrint("$_tag${element.toString()}");
       }
-      print("$_tag=======================================================================");
-      print("");
+      if(showTraceList == true){
+        for (var element in _st) {
+          debugPrint("$_tag${element.toString()}");
+        }
+      }
+      debugPrint("$_tag=======================================================================");
+      debugPrint("");
     }
 
     if((_oDebugMode && cate != LogCate.http) || cate == LogCate.system){

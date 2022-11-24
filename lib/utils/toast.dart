@@ -1,10 +1,10 @@
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter/material.dart';
 
+
 class OuiToast {
 
-  static EasyLoading get instance => EasyLoading.instance;
-
+  static EasyLoadingToastPosition? position;
 
   static Future<void> toast(text, {
     Duration? duration,
@@ -13,7 +13,7 @@ class OuiToast {
     bool? dismissOnTap,
   }) async => EasyLoading.showToast(text.toString(),
     duration: duration,
-    toastPosition: toastPosition ?? EasyLoadingToastPosition.center,
+    toastPosition: position ?? toastPosition ?? EasyLoadingToastPosition.center,
     maskType: maskType,
     dismissOnTap: dismissOnTap,
   );
@@ -33,7 +33,6 @@ class OuiToast {
     maskType: maskType,
     dismissOnTap: dismissOnTap,
   );
-
 }
 
 Future<void> toast(text, {
@@ -59,3 +58,5 @@ Future<void> showLoading({
   maskType: maskType,
   dismissOnTap: dismissOnTap,
 );
+
+Future<void> closeToast() async => OuiToast.close();

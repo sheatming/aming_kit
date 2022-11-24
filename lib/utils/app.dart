@@ -19,12 +19,13 @@ class OuiApp{
 
   static Future run({
     required Widget appChild,
+    double designWidthSize = 750,
     SystemUiOverlayStyle? systemUiOverlayStyle,
     Function<Widget>(String message, Object error)? errorWidgetFn,
   }) async{
 
       FlutterError.onError = (FlutterErrorDetails details) {
-        Zone.current.handleUncaughtError(details.exception, details.stack as StackTrace);
+        if(isNotNull(details) && isNotNull(details.stack))Zone.current.handleUncaughtError(details.exception, details.stack as StackTrace);
       };
       ErrorWidget.builder = (FlutterErrorDetails details) {
         Zone.current.handleUncaughtError(details.exception, details.stack as StackTrace);
@@ -50,37 +51,13 @@ class OuiApp{
 
     return runZonedGuarded(() async {
         WidgetsFlutterBinding.ensureInitialized();
-        runApp(appChild);
+        await OuiSize.init(designWidthSize);
+        Future.delayed(const Duration(milliseconds: 300), () =>  runApp(appChild));
         if(isNotNull(systemUiOverlayStyle)) SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle!);
       },
       /// zone错误回调函数
       ((error, StackTrace stack) {
-        List<String> st = formatStackTrace(stack)!;
-        var stc = st.first.replaceAll("#0   ", " ");
-
-        consoleLog.insert(0, ConsoleLogItem(
-          tag: "runApp",
-          content: error.toString(),
-          cate: LogCate.error,
-          path: stc.removeFirst,
-          stackTrace: stack,
-        ));
-
-        // jhDebug.setDebugLog(
-        //   debugLog: error.toString(),
-        //   debugStack: stack.toString(),
-        // );
-        // /// 错误信息
-        // FlutterErrorDetails details = FlutterErrorDetails(
-        //   exception: error,
-        //   stack: stack,
-        //   library: 'Flutter JH_DEBUG',
-        // );
-        // if (debugMode == DebugMode.inConsole) {
-        //   FlutterError.dumpErrorToConsole(details);
-        // }
-        // // 自定义上报错误
-        // if (errorCallback != null) errorCallback(details);
+        log.error(error.toString().replaceAll("#0   ", " "), stackTrace: stack, showTraceList: true, tag: error.runtimeType.toString());
       }),
       zoneSpecification: ZoneSpecification(
         print: (Zone self, ZoneDelegate parent, Zone zone, String line) {

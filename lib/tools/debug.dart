@@ -60,6 +60,8 @@ class OuiDevTools extends StatefulWidget {
   final OuiDevOption? option8;
   final OuiDevOption? option9;
 
+
+
   static void open({
     BuildContext? context,
     OuiDevOption? option1,
@@ -385,3 +387,59 @@ class _OuiDevTools extends State<OuiDevTools> {
   }
 }
 
+
+autoOpenDevTool({
+  BuildContext? context,
+  OuiDevOption? option1,
+  OuiDevOption? option2,
+  OuiDevOption? option3,
+  OuiDevOption? option4,
+  OuiDevOption? option5,
+  OuiDevOption? option6,
+  OuiDevOption? option7,
+  OuiDevOption? option8,
+  OuiDevOption? option9,
+}){
+  if(OuiCache.getBool("runDebug", defValue: false)){
+    OuiDevTools.open(
+        option1: option1,
+        option2: option2,
+        option3: option3,
+        option4: option4,
+        option5: option5,
+        option6: option6,
+        option7: option7,
+        option8: option8,
+        option9: option9
+    );
+  }
+}
+
+class OuiRunTimePoint{
+
+  static Map<String, Map<String, dynamic>> pointLog = {};
+
+  static void startPoint(String name, String title) async{
+    pointLog.remove(name);
+    pointLog.addAll({name: {"sp": DateTime.now().millisecondsSinceEpoch, "ep": 0, "title": title}});
+  }
+
+  static void endPoint(String name) async{
+    if(pointLog.containsKey(name)){
+      Map<String, dynamic>? _tmp = pointLog[name];
+      _tmp!['ep'] = DateTime.now().millisecondsSinceEpoch;
+      pointLog[name] = _tmp;
+    }
+  }
+
+  static int getMS(String name) {
+    if(pointLog.containsKey(name)){
+      Map<String, dynamic>? _tmp = pointLog[name];
+      if(_tmp!['ep']! == 0) return -2;
+      if(_tmp['sp']! == 0) return -1;
+      return _tmp['ep']! - _tmp['sp']!;
+    } else {
+      return -2;
+    }
+  }
+}

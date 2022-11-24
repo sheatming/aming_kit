@@ -13,6 +13,8 @@ dependencies:
 
   android_id: ^0.0.7
   connectivity_plus: ^2.3.6+1
+  convert: ^3.0.2
+  crypto: ^3.0.2
   device_info_plus: ^4.0.0
   dio: ^4.0.6
   fluro: ^2.0.3
@@ -21,6 +23,12 @@ dependencies:
   path_provider: ^2.0.11
   shared_preferences: ^2.0.15
   tinycolor2: ^2.1.0
+  flutter_tab_indicator_styler: ^2.0.0
+
+  r_scan:
+    git:
+      url: git@github.com:sheatming/r_scan.git
+  wakelock: ^0.6.2
 
 dev_dependencies:
   flutter_test:

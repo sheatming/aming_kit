@@ -1,6 +1,7 @@
 import 'package:aming_kit/aming_kit.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 
 class OuiConsole extends StatefulWidget {
   const OuiConsole({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
 
   @override
   void initState() {
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
     super.initState();
   }
 
@@ -30,6 +31,7 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
           appBar: AppBar(
             automaticallyImplyLeading: false,
             centerTitle: true,
+            backgroundColor: Theme.of(context).primaryColor,
             titleTextStyle: TextStyle(
                 color: Theme.of(context).primaryColor.antiWhite(
                     lightColor: Colors.white,
@@ -37,42 +39,98 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
                 ),
             ),
             title: const Text("控制台"),
-            bottom: TabBar(
-              indicatorWeight: 8.px,
-              indicatorSize: TabBarIndicatorSize.tab,
-              isScrollable: true,
-              labelColor: Theme.of(context).primaryColor,
-              indicatorColor: Theme.of(context).primaryColor,
-              unselectedLabelColor: Theme.of(context).primaryColor.antiWhite(
-                lightColor: Colors.white,
-                darkColor: Colors.black
-              ),
-              controller: _tabController,
-              padding: const EdgeInsets.only(
-                top: 0,
-                bottom: 0,
-              ),
-              tabs: const [
-                Tab(child: Text("APP")),
-                Tab(child: Text("Device")),
-                Tab(child: Text("Console")),
-                Tab(child: Text("Network")),
-              ],
-            ),
+            // bottom: TabBar(
+            //   indicatorWeight: 8.px,
+            //   indicatorSize: TabBarIndicatorSize.tab,
+            //   isScrollable: true,
+            //   labelColor: Theme.of(context).primaryColor,
+            //   labelStyle: TextStyle(
+            //     fontSize: 28.px,
+            //     fontWeight: FontWeight.bold,
+            //   ),
+            //   indicator: RectangularIndicator(
+            //     color: Colors.black,
+            //     paintingStyle: PaintingStyle.fill,
+            //       topRightRadius: 50,
+            //     topLeftRadius: 50,
+            //     bottomLeftRadius: 50,
+            //     bottomRightRadius: 50,
+            //       strokeWidth: 1,
+            //   ),
+            //   indicatorColor: Theme.of(context).primaryColor,
+            //   unselectedLabelColor: Colors.black54,
+            //   unselectedLabelStyle: TextStyle(
+            //     color: Colors.black54,
+            //     fontSize: 28.px
+            //   ),
+            //   controller: _tabController,
+            //   padding: const EdgeInsets.only(
+            //     top: 0,
+            //     bottom: 0,
+            //   ),
+            //   tabs: const [
+            //     Tab(child: Text("APP")),
+            //     Tab(child: Text("Device")),
+            //     Tab(child: Text("Console")),
+            //     Tab(child: Text("Network")),
+            //   ],
+            // ),
           ),
-          body: Padding(
-            padding: EdgeInsets.only(
-              bottom: OuiSize.touchBarHeight(),
-            ),
-            child: TabBarView(
-              controller: _tabController,
-              children: const [
-                _APPInfo(),
-                _DeviceInfo(),
-                _ConsoleLog(),
-                _NetworkLog(),
-              ],
-            ),
+          body: Column(
+            children: [
+              TabBar(
+                indicatorWeight: 8.px,
+                indicatorSize: TabBarIndicatorSize.tab,
+                isScrollable: true,
+                labelColor: Theme.of(context).primaryColor,
+                labelStyle: TextStyle(
+                  fontSize: 28.px,
+                  fontWeight: FontWeight.bold,
+                ),
+                indicator: DotIndicator(
+                  color: Theme.of(context).primaryColor,
+                  distanceFromCenter: 10,
+                  strokeWidth: 10,
+                  radius: 3,
+                  paintingStyle: PaintingStyle.fill,
+                ),
+                indicatorColor: Theme.of(context).primaryColor,
+                unselectedLabelColor: Colors.black54,
+                unselectedLabelStyle: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 28.px
+                ),
+                controller: _tabController,
+                padding: const EdgeInsets.only(
+                  top: 0,
+                  bottom: 0,
+                ),
+                tabs: const [
+                  Tab(child: Text("APP")),
+                  Tab(child: Text("Device")),
+                  Tab(child: Text("Console")),
+                  Tab(child: Text("Network")),
+                  Tab(child: Text("Performance")),
+                ],
+              ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    bottom: OuiSize.touchBarHeight(),
+                  ),
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: const [
+                      _APPInfo(),
+                      _DeviceInfo(),
+                      _ConsoleLog(),
+                      _NetworkLog(),
+                      _PerformanceLog(),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           )
 
       ),
@@ -218,6 +276,7 @@ class _ConsoleLogState extends State<_ConsoleLog> {
   }
 
   Widget _item(ConsoleLogItem item){
+    List<String>? _starkTrace = isNotNull(item.stackTrace) ? formatStackTrace(item.stackTrace!) : null;
     return GestureDetector(
       onTap: () => openDetailDialog(context, "日志详情", children: [
         _detailText("时间", item.date.toTime()),
@@ -227,6 +286,23 @@ class _ConsoleLogState extends State<_ConsoleLog> {
         const SizedBox(height: 8),
         const Divider(height: 1, color: Colors.white),
         _detailText("内容", item.content.toString()),
+        if(isNotNull(_starkTrace))
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 8),
+              const Divider(height: 1, color: Colors.white),
+              _detailText("trace", ""),
+              ..._starkTrace!.asMap().keys.map((e) {
+                String _item = _starkTrace[e];
+                return _listText(_item.toString().replaceAll("#0   ", "#$e   "));
+              }).toList(),
+            ],
+          ),
+
+
+
       ]),
       child: Card(
         elevation: 0,
@@ -449,14 +525,85 @@ class _NetworkLogState extends State<_NetworkLog> {
   }
 }
 
+class _PerformanceLog extends StatefulWidget {
+  const _PerformanceLog({Key? key}) : super(key: key);
+
+  @override
+  State<_PerformanceLog> createState() => _PerformanceLogState();
+}
+
+class _PerformanceLogState extends State<_PerformanceLog> {
+
+  int _runTime = OuiRunTimePoint.getMS("runApp");
+  String _runTimeText(int xTime){
+    if(xTime > 0) return "${(xTime / 1000).toString()}s";
+    if(xTime == -2) return "无计划";
+    return "计算中";
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xfffafafa),
+      ),
+      child: ListView(
+        padding: const EdgeInsets.only(
+            top: 10
+        ),
+        children: [
+          ...OuiRunTimePoint.pointLog.keys.map((value) {
+            return _infoItem(OuiRunTimePoint.pointLog[value]!['title'], _runTimeText(OuiRunTimePoint.getMS(value)));
+          }).toList(),
+        ],
+      ),
+    );
+  }
+}
+
+
 Widget _detailText(String title, String text){
   return Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       const SizedBox(height: 8),
-      Text("$title: $text", style: const TextStyle(
-        fontSize: 12,
-        color: Colors.white,
-      ))
+      GestureDetector(
+        onLongPress: () async{
+          if(isNotNull(text)){
+            await Clipboard.setData(ClipboardData(text: text));
+            OuiToast.toast("已复制到剪切板");
+          }
+        },
+        child: Text("$title: $text", style: const TextStyle(
+          fontSize: 12,
+          color: Colors.white,
+        )),
+      )
+    ],
+  );
+}
+
+Widget _listText(String text){
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const SizedBox(height: 8),
+      GestureDetector(
+        onLongPress: () async{
+          if(isNotNull(text)){
+            await Clipboard.setData(ClipboardData(text: text));
+            OuiToast.toast("已复制到剪切板");
+          }
+        },
+        child: Text(text, style: const TextStyle(
+          fontSize: 12,
+          color: Colors.white,
+        )),
+      )
     ],
   );
 }
@@ -594,8 +741,9 @@ Widget _infoItem(title, content, {bool isBorder = true}){
         bottom: 5
     ),
     child: ListTile(
-      onLongPress: (){
-        Clipboard.setData(ClipboardData(text: "$title: $content"));
+      onLongPress: () async{
+        await Clipboard.setData(ClipboardData(text: "$title: $content"));
+        OuiToast.toast("已复制到剪切板");
       },
       dense: true,
       title: Text(title),

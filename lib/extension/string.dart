@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
 import '../utils/common.dart';
 
 extension OtherString on String{
@@ -29,6 +32,24 @@ extension OtherString on String{
 
   bool get isNull{
     return !isNotNull(this);
+  }
+
+  String get toMd5{
+    var content = const Utf8Encoder().convert(this);
+    var digest = md5.convert(content);
+    return hex.encode(digest.bytes);
+  }
+
+
+  Map get toMap{
+    if(!isNotNull(this)) return {};
+    List<String> urlArr = Uri.decodeComponent(this).split("&");
+    Map tmpMap = {};
+    for (var item in urlArr) {
+      var tmpParams = item.split("=");
+      tmpMap.addAll({tmpParams[0]: tmpParams[1]});
+    }
+    return tmpMap;
   }
 }
 

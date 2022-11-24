@@ -359,6 +359,7 @@ void _pushLog({
   if(isNotNull(result)) _log += "[$status] - ${result?.statusMessage ?? "-"}#br#";
   if(isNotNull(error)) _log += "${error?.error ?? "-"}#br#";
 
+  _log += "⌚️ ${DateTime.now().millisecondsSinceEpoch - queryTime}ms#br#";
   _log += "📦 ${requestOptions.data ?? "-"}#br#";
   _log += "📧 ${result?.data ?? '-'}#br#";
   _log += "👨 ${requestOptions.headers}";

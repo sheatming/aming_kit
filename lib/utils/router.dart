@@ -9,6 +9,7 @@ class OuiRoute {
   static FluroRouter? router;
 
   static Map<String, Map<String, dynamic>> params = {};
+  static Map<String, dynamic> rags = {};
 
   // static List<String> historyRoute = [];
   static get generator => router?.generator;
@@ -35,14 +36,26 @@ class OuiRoute {
         handler: Handler(
             handlerFunc: (BuildContext? context, Map<String, dynamic> res) {
               String route = "_${page.runtimeType.toString()}";
+              String routeState = "_${page.runtimeType.toString()}State";
+
               if(!isNotNull(res)) res = {};
+
+              if(isNotNull(params[route])) params.remove(route);
+              if(isNotNull(params[routeState])) params.remove(routeState);
+
+              params.addAll({
+                route: res,
+                routeState: res,
+              });
+
+              if(isNotNull(rags[route])) rags.remove(route);
+              if(isNotNull(rags[routeState])) rags.remove(routeState);
+
               if(isNotNull(context!.settings!.arguments)){
-                res['args'] = context.settings!.arguments;
-              }
-              if(isNotNull(params[route])){
-                params[route] = res;
-              } else {
-                params.addAll({route: res});
+                rags.addAll({
+                  route: context.settings!.arguments,
+                  routeState: context.settings!.arguments,
+                });
               }
               return page;
             }
@@ -87,15 +100,15 @@ getParams(String field, object, {defValue, bool isArgs = false}){
   String route = object.runtimeType.toString();
   if(field == "-") return OuiRoute.params[route];
   if(isNotNull(OuiRoute.params[route])){
-    return OuiRoute.params[route]![field]?.first ?? defValue ?? "";
+    return OuiRoute.params[route]![field]?.first ?? defValue;
   }
-  return defValue ?? "";
+  return defValue;
 }
 
 getArgs(object, {defValue}){
   String _route = object.runtimeType.toString();
-  if(isNotNull(OuiRoute.params[_route]) && isNotNull(OuiRoute.params[_route]!["args"])){
-    return OuiRoute.params[_route]!["args"] ?? defValue;
+  if(isNotNull(OuiRoute.rags[_route])){
+    return OuiRoute.rags[_route]! ?? defValue;
   } else {
     return defValue;
   }
