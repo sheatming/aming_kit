@@ -133,21 +133,21 @@ class OuiApi {
       }) async {
 
     path = path.replaceAll("//", "/");
-    BaseOptions _options = options ?? BaseOptions();
+    BaseOptions tmpOptions = options ?? BaseOptions();
     Map<String, dynamic> h = {};
     if (isNotNull(_header)) h.addAll(_header);
     if (isNotNull(header)) h.addAll(header!);
 
-    _options.method = method;
-    _options.headers = h;
-    if (isNotNull(_baseUrl)) _options.baseUrl = _baseUrl!;
-    if (isNotNull(baseUrl)) _options.baseUrl = baseUrl!;
+    tmpOptions.method = method;
+    tmpOptions.headers = h;
+    if (isNotNull(_baseUrl)) tmpOptions.baseUrl = _baseUrl!;
+    if (isNotNull(baseUrl)) tmpOptions.baseUrl = baseUrl!;
 
     ///避免双斜杠问题
-    if(path.first == '/' && _options.baseUrl.last == '/') path = path.removeFirst;
-    if(path.first != '/' && _options.baseUrl.last != '/') path = "/$path";
+    if(path.first == '/' && tmpOptions.baseUrl.last == '/') path = path.removeFirst;
+    if(path.first != '/' && tmpOptions.baseUrl.last != '/') path = "/$path";
 
-    Dio dio = Dio(_options);
+    Dio dio = Dio(tmpOptions);
 
     int _queryTime = DateTime.now().millisecondsSinceEpoch;
 

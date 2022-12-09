@@ -98,7 +98,13 @@ class OuiRoute {
 
 getParams(String field, object, {defValue, bool isArgs = false}){
   String route = object.runtimeType.toString();
-  if(field == "-") return OuiRoute.params[route];
+  if(field == "-"){
+    Map<String, dynamic> tmpParams = {};
+    OuiRoute.params[route]?.forEach((key, value) {
+      tmpParams.addAll({key: value.first});
+    });
+    return tmpParams;
+  }
   if(isNotNull(OuiRoute.params[route])){
     return OuiRoute.params[route]![field]?.first ?? defValue;
   }
@@ -115,6 +121,6 @@ getArgs(object, {defValue}){
 }
 
 void goback({BuildContext? context, Object? data}){
-  Navigator.pop(context ?? OuiGlobal.globalContext!, data);
+  return Navigator.pop(context ?? OuiGlobal.globalContext!, data);
 }
 

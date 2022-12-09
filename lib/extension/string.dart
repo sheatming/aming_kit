@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:core';
+import 'package:aming_kit/utils/validator.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import '../utils/common.dart';
@@ -73,5 +75,14 @@ extension RemoveString on String {
       tmp = tmp.add(this[i]);
     }
     return tmp;
+  }
+}
+
+extension RegExpString on String{
+  bool get isMobile{
+    return OuiValidator.isMobile(this);
+  }
+  bool get isEmail{
+    return OuiValidator.isEmail(this);
   }
 }

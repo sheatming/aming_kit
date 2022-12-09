@@ -732,7 +732,7 @@ void openDetailDialog(BuildContext context, String title, {List<Widget>? childre
     }
 );
 
-Widget _infoItem(title, content, {bool isBorder = true}){
+Widget _infoItem(title, content){
   return Container(
     decoration: const BoxDecoration(
       color: Colors.white,

@@ -1,4 +1,5 @@
 import 'package:aming_kit/aming_kit.dart';
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
@@ -14,6 +15,7 @@ class OuiMaterialApp extends StatefulWidget {
     this.builder,
     this.title = '',
     this.navigatorObservers,
+    this.onInit,
   }) : super(key: key);
 
   final Map<String, Widget>? routes;
@@ -25,6 +27,7 @@ class OuiMaterialApp extends StatefulWidget {
   final TransitionBuilder? builder;
   final String title;
   final List<NavigatorObserver>? navigatorObservers;
+  final Future<void>? onInit;
 
 
   static void restartApp({BuildContext? context}) {
@@ -51,9 +54,13 @@ class _OuiMaterialApp extends State<OuiMaterialApp> {
 
   void initApp() async{
     OuiGlobal.initMaterialApp = true;
+    await OuiCache.init();
+    // OuiGlobal.eventBus = EventBus();
     OuiRoute.init(widget.routes);
     OuiApp.initAppDir();
     OuiApp.initPackageInfo();
+    if(isNotNull(widget.onInit)) await widget.onInit!;
+
   }
 
   @override

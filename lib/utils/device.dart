@@ -36,7 +36,7 @@ class OuiDevice{
     } else if(isAndroid) {
       if(!isNotNull(_androidInfo)) _androidInfo = await _deviceInfo?.androidInfo;
       if(!isNotNull(_androidId)) _androidId = const AndroidId();
-      brand = _androidInfo?.brand;;
+      brand = _androidInfo?.brand;
       model = _androidInfo?.model;
       uuid = await _androidId?.getId();
       isPhysicalDevice = _androidInfo?.isPhysicalDevice;
