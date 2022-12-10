@@ -19,15 +19,15 @@ class OuiRoute {
       routes = {};
     }
     if(!isNotNull(router)) router = FluroRouter();
-    String _log = "";
+    String tmpLog = "";
 
     routes?.addAll({"debug.console": const OuiConsole()});
     routes?.forEach((String route, Widget page){
-      _log += "$route#br#";
+      tmpLog += "$route#br#";
       registerRoute(route, page, true);
     });
     log.system("initialization", tag: "Route");
-    if(isNotNull(_log)) log.debug(_log, tag: "Register Route");
+    if(isNotNull(tmpLog)) log.debug(tmpLog, tag: "Register Route");
   }
 
   static void registerRoute(String routePath, Widget page, [bool isInit = false]){
@@ -73,18 +73,16 @@ class OuiRoute {
     bool replace = false,
     Object? arguments,
   }) async{
-    BuildContext? _context = context ?? OuiGlobal.globalContext;
+    BuildContext? tmpContext = context ?? OuiGlobal.globalContext;
     if(isNotNull(data)) path = "$path?${data!.toUrl}";
-    String _log = path;
-    if(isNotNull(arguments)) _log += "#br#$arguments";
-    if(clearStack) _log += "#br#clearStack: $clearStack";
-    log.debug(_log, tag: "跳转路由", type: "Route");
-    if(!isNotNull(_context)){
-      log.error("context无效, 请在MaterialApp中将[OuiGlobal.navigatorKey]注册到[navigatorKey]", type: "Route");return;
-    }
-    TransitionType _transition = transition ?? (Platform.isIOS ? TransitionType.cupertino : TransitionType.inFromRight);
-    var result = await OuiRoute.router!.navigateTo(_context!, path,
-      transition: _transition,
+    String tmpLog = path;
+    if(isNotNull(arguments)) tmpLog += "#br#$arguments";
+    if(clearStack) tmpLog += "#br#clearStack: $clearStack";
+    log.debug(tmpLog, tag: "跳转路由", type: "Route");
+    if(!isNotNull(tmpContext)) throw contextError;
+    TransitionType tmpTransition = transition ?? (Platform.isIOS ? TransitionType.cupertino : TransitionType.inFromRight);
+    var result = await OuiRoute.router!.navigateTo(tmpContext!, path,
+      transition: tmpTransition,
       replace: replace,
       clearStack: clearStack,
       routeSettings: RouteSettings(
@@ -112,9 +110,9 @@ getParams(String field, object, {defValue, bool isArgs = false}){
 }
 
 getArgs(object, {defValue}){
-  String _route = object.runtimeType.toString();
-  if(isNotNull(OuiRoute.rags[_route])){
-    return OuiRoute.rags[_route]! ?? defValue;
+  String tmpRoute = object.runtimeType.toString();
+  if(isNotNull(OuiRoute.rags[tmpRoute])){
+    return OuiRoute.rags[tmpRoute]! ?? defValue;
   } else {
     return defValue;
   }

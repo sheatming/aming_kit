@@ -19,7 +19,6 @@ class OuiApi {
 
   static BaseOptions? options;
   static String? _baseUrl;
-  static String? _uploadUrl;
   static Map<String, dynamic> _header = {};
   static Function? _err401; //未授权登陆
   static Function? _resultHandle;
@@ -92,7 +91,7 @@ class OuiApi {
     Function? onSuccess,
     Function? onFailed,
   }) async{
-    int _queryTime = DateTime.now().millisecondsSinceEpoch;
+    int queryTime = DateTime.now().millisecondsSinceEpoch;
     if(!isNotNull(OuiApp.getTemporaryDir)) await OuiApp.initAppDir();
     String? dir = OuiApp.getTemporaryDir;
     File file = File("$dir/$savePath");
@@ -108,7 +107,7 @@ class OuiApi {
 
       _pushLog(
         requestOptions: response.requestOptions,
-        queryTime: _queryTime,
+        queryTime: queryTime,
         result: response,
         code: response.statusCode,
       );
@@ -149,7 +148,7 @@ class OuiApi {
 
     Dio dio = Dio(tmpOptions);
 
-    int _queryTime = DateTime.now().millisecondsSinceEpoch;
+    int queryTime = DateTime.now().millisecondsSinceEpoch;
 
     dio.interceptors.add(QueuedInterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -164,7 +163,7 @@ class OuiApi {
         onError: (error, handler) {
           if (error.error is SocketException) {
             _pushLog(
-              queryTime: _queryTime,
+              queryTime: queryTime,
               requestOptions: error.requestOptions,
               error: error,
               code: 503,
@@ -175,7 +174,7 @@ class OuiApi {
           switch (error.type) {
             case DioErrorType.connectTimeout:
               _pushLog(
-                queryTime: _queryTime,
+                queryTime: queryTime,
                 requestOptions: error.requestOptions,
                 error: error,
                 code: 503,
@@ -184,7 +183,7 @@ class OuiApi {
               return;
             case DioErrorType.receiveTimeout:
               _pushLog(
-                queryTime: _queryTime,
+                queryTime: queryTime,
                 requestOptions: error.requestOptions,
                 error: error,
                 code: 503,
@@ -193,7 +192,7 @@ class OuiApi {
               return;
             default:
               _pushLog(
-                queryTime: _queryTime,
+                queryTime: queryTime,
                 requestOptions: error.requestOptions,
                 error: error,
                 code: 999,
@@ -203,10 +202,10 @@ class OuiApi {
           }
         },
         onResponse: (result, handler) {
-          int? _status = result.statusCode;
-          if (_status == 200) _status = result.data['status'] ?? 0;
+          int? status = result.statusCode;
+          if (status == 200) status = result.data['status'] ?? 0;
 
-          switch (_status) {
+          switch (status) {
             case 503:
             //通用错误
               log.info(503, tag: "Api");
@@ -251,7 +250,7 @@ class OuiApi {
     try{
       var result = await dio.request(path, data: data);
       _pushLog(
-        queryTime: _queryTime,
+        queryTime: queryTime,
         requestOptions: result.requestOptions,
         result: result,
         code: result.statusCode.toString().toInt,
@@ -259,7 +258,7 @@ class OuiApi {
       return await _handleResponse(result, skipResultHandle: skipResultHandle);
     } on DioError catch (e){
 
-      Response _response = Response(
+      Response response = Response(
         statusCode: e.response?.statusCode,
         requestOptions: e.requestOptions,
         statusMessage: e.response?.statusMessage,
@@ -268,12 +267,12 @@ class OuiApi {
       );
 
       _pushLog(
-        queryTime: _queryTime,
-        requestOptions: _response.requestOptions,
-        result: _response,
-        code: _response.statusCode,
+        queryTime: queryTime,
+        requestOptions: response.requestOptions,
+        result: response,
+        code: response.statusCode,
       );
-      return await _handleResponse(_response, skipResultHandle: true);
+      return await _handleResponse(response, skipResultHandle: true);
     }
 
   }
@@ -354,17 +353,17 @@ void _pushLog({
 
 
   int? status = code ?? result?.statusCode ?? 500;
-  String _log = "🔗 ${requestOptions.method}: "
+  String tmpLog = "🔗 ${requestOptions.method}: "
       "${requestOptions.baseUrl}${requestOptions.path}#br#";
-  if(isNotNull(result)) _log += "[$status] - ${result?.statusMessage ?? "-"}#br#";
-  if(isNotNull(error)) _log += "${error?.error ?? "-"}#br#";
+  if(isNotNull(result)) tmpLog += "[$status] - ${result?.statusMessage ?? "-"}#br#";
+  if(isNotNull(error)) tmpLog += "${error?.error ?? "-"}#br#";
 
-  _log += "⌚️ ${DateTime.now().millisecondsSinceEpoch - queryTime}ms#br#";
-  _log += "📦 ${requestOptions.data ?? "-"}#br#";
-  _log += "📧 ${result?.data ?? '-'}#br#";
-  _log += "👨 ${requestOptions.headers}";
+  tmpLog += "⌚️ ${DateTime.now().millisecondsSinceEpoch - queryTime}ms#br#";
+  tmpLog += "📦 ${requestOptions.data ?? "-"}#br#";
+  tmpLog += "📧 ${result?.data ?? '-'}#br#";
+  tmpLog += "👨 ${requestOptions.headers}";
 
-  log.http(_log);
+  log.http(tmpLog);
   if(OuiLog.oDebugMode){
     networkLog.insert(0, NetworkLogItem(
       statusCode: status,

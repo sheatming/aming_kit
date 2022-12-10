@@ -276,7 +276,7 @@ class _ConsoleLogState extends State<_ConsoleLog> {
   }
 
   Widget _item(ConsoleLogItem item){
-    List<String>? _starkTrace = isNotNull(item.stackTrace) ? formatStackTrace(item.stackTrace!) : null;
+    List<String>? starkTrace = isNotNull(item.stackTrace) ? formatStackTrace(item.stackTrace!) : null;
     return GestureDetector(
       onTap: () => openDetailDialog(context, "日志详情", children: [
         _detailText("时间", item.date.toTime()),
@@ -286,7 +286,7 @@ class _ConsoleLogState extends State<_ConsoleLog> {
         const SizedBox(height: 8),
         const Divider(height: 1, color: Colors.white),
         _detailText("内容", item.content.toString()),
-        if(isNotNull(_starkTrace))
+        if(isNotNull(starkTrace))
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,9 +294,9 @@ class _ConsoleLogState extends State<_ConsoleLog> {
               const SizedBox(height: 8),
               const Divider(height: 1, color: Colors.white),
               _detailText("trace", ""),
-              ..._starkTrace!.asMap().keys.map((e) {
-                String _item = _starkTrace[e];
-                return _listText(_item.toString().replaceAll("#0   ", "#$e   "));
+              ...starkTrace!.asMap().keys.map((e) {
+                String item = starkTrace[e];
+                return _listText(item.toString().replaceAll("#0   ", "#$e   "));
               }).toList(),
             ],
           ),
@@ -534,7 +534,7 @@ class _PerformanceLog extends StatefulWidget {
 
 class _PerformanceLogState extends State<_PerformanceLog> {
 
-  int _runTime = OuiRunTimePoint.getMS("runApp");
+  // final int _runTime = OuiRunTimePoint.getMS("runApp");
   String _runTimeText(int xTime){
     if(xTime > 0) return "${(xTime / 1000).toString()}s";
     if(xTime == -2) return "无计划";

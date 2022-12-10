@@ -1,12 +1,7 @@
 import 'dart:ui';
 import 'package:aming_kit/aming_kit.dart';
-import 'package:flutter/material.dart';
 import 'package:r_scan/r_scan.dart';
 import 'package:wakelock/wakelock.dart';
-
-import '../utils/app.dart';
-import '../utils/common.dart';
-import '../utils/define.dart';
 
 class OuiScan extends StatefulWidget{
   const OuiScan({Key? key,
@@ -135,10 +130,10 @@ class _OuiScan extends State<OuiScan>{
                   widget.appBar ?? AppBar(
                     title: Text(widget.title ?? ""),
                     backgroundColor: Colors.transparent,
-                    iconTheme: IconThemeData(
+                    iconTheme: const IconThemeData(
                       color: Colors.white,
                     ),
-                    titleTextStyle: TextStyle(
+                    titleTextStyle: const TextStyle(
                       color: Colors.white,
                     ),
                   ),
@@ -188,66 +183,66 @@ class _OuiScan extends State<OuiScan>{
     return isOpen;
   }
 
-  Widget _buildFlashBtn(BuildContext context, AsyncSnapshot<bool> snapshot) {
-    return snapshot.hasData
-        ? Padding(
-      padding:  const EdgeInsets.only(
-          bottom: 12
-      ),
-      child: GestureDetector(
-        onTap: (){
-          if (snapshot.data == true) {
-            _controller!.setFlashMode(false);
-          } else {
-            _controller!.setFlashMode(true);
-          }
-          setState(() {});
-        },
-        child: Container(
-          color: Colors.transparent,
-          child: AnimatedCrossFade(
-            duration: Duration(milliseconds: 200),
-            crossFadeState: snapshot.data == true ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-            firstChild: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: const <Widget>[
-                Icon(Icons.light_mode, size: 26, color: Colors.grey),
-                Padding(
-                  padding: EdgeInsets.only(
-                      top: 5
-                  ),
-                  child: Text('轻触点亮',
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            secondChild: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(Icons.light_mode_outlined, size: 26, color: Colors.grey),
-                Padding(
-                  padding: EdgeInsets.only(
-                      top: 5
-                  ),
-                  child: Text('轻触关闭',
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    )
-        : Container();
-  }
+  // Widget _buildFlashBtn(BuildContext context, AsyncSnapshot<bool> snapshot) {
+  //   return snapshot.hasData
+  //       ? Padding(
+  //     padding:  const EdgeInsets.only(
+  //         bottom: 12
+  //     ),
+  //     child: GestureDetector(
+  //       onTap: (){
+  //         if (snapshot.data == true) {
+  //           _controller!.setFlashMode(false);
+  //         } else {
+  //           _controller!.setFlashMode(true);
+  //         }
+  //         setState(() {});
+  //       },
+  //       child: Container(
+  //         color: Colors.transparent,
+  //         child: AnimatedCrossFade(
+  //           duration: Duration(milliseconds: 200),
+  //           crossFadeState: snapshot.data == true ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+  //           firstChild: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: const <Widget>[
+  //               Icon(Icons.light_mode, size: 26, color: Colors.grey),
+  //               Padding(
+  //                 padding: EdgeInsets.only(
+  //                     top: 5
+  //                 ),
+  //                 child: Text('轻触点亮',
+  //                   style: TextStyle(
+  //                       fontSize: 12,
+  //                       color: Colors.grey
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //           secondChild: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: const [
+  //               Icon(Icons.light_mode_outlined, size: 26, color: Colors.grey),
+  //               Padding(
+  //                 padding: EdgeInsets.only(
+  //                     top: 5
+  //                 ),
+  //                 child: Text('轻触关闭',
+  //                   style: TextStyle(
+  //                       fontSize: 12,
+  //                       color: Colors.grey
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   )
+  //       : Container();
+  // }
 
 
 }

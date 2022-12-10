@@ -67,49 +67,49 @@ class OuiLog {
     // if(!isNotNull(_list["All"])){
     //     _list.addAll({"All": []});
     // }
-    var _tag = "";
+    var tmpTag = "";
 
     switch(cate){
       case LogCate.info:
-        _tag = ".*INFO.* ";
+        tmpTag = ".*INFO.* ";
         break;
       case LogCate.error:
-        _tag = ".*ERROR.* ";
+        tmpTag = ".*ERROR.* ";
         break;
       case LogCate.warn:
-        _tag = ".*WARN.* ";
+        tmpTag = ".*WARN.* ";
         break;
       case LogCate.debug:
-        _tag = ".*DEBUG.* ";
+        tmpTag = ".*DEBUG.* ";
         break;
       case LogCate.http:
-        _tag = ".*HTTP.* ";
+        tmpTag = ".*HTTP.* ";
         break;
       case LogCate.system:
-        _tag = ".*SYSTEM.* ";
+        tmpTag = ".*SYSTEM.* ";
         break;
       default:
         break;
     }
 
-    List<String> _st = formatStackTrace(stackTrace ?? StackTrace.current)!;
+    List<String> tmpSt = formatStackTrace(stackTrace ?? StackTrace.current)!;
     // var _stc = _st.last.replaceAll("#${methodCount-1}   ", " ");
-    var _stc = _st.first.replaceAll("#0   ", " ");
+    var tmpStc = tmpSt.first.replaceAll("#0   ", " ");
     if(kDebugMode){
-      debugPrint("$_tag=======================================================================");
-      debugPrint("$_tag${isNotNull(tag) ? "$tag >>> " : ""}${_stc.removeFirst} ⬇️");
+      debugPrint("$tmpTag=======================================================================");
+      debugPrint("$tmpTag${isNotNull(tag) ? "$tag >>> " : ""}${tmpStc.removeFirst} ⬇️");
 
       object = object.toString().replaceAll("\n", "#br#");
       List objArr = object.toString().split("#br#");
       for (var element in objArr) {
-        debugPrint("$_tag${element.toString()}");
+        debugPrint("$tmpTag${element.toString()}");
       }
       if(showTraceList == true){
-        for (var element in _st) {
-          debugPrint("$_tag${element.toString()}");
+        for (var element in tmpSt) {
+          debugPrint("$tmpTag${element.toString()}");
         }
       }
-      debugPrint("$_tag=======================================================================");
+      debugPrint("$tmpTag=======================================================================");
       debugPrint("");
     }
 
@@ -118,7 +118,7 @@ class OuiLog {
         tag: tag,
         content: object.toString().replaceAll("#br#", "\r\n"),
         cate: cate,
-        path: _stc.removeFirst,
+        path: tmpStc.removeFirst,
         stackTrace: StackTrace.current,
       ));
     }

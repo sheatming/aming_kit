@@ -1,7 +1,4 @@
 import 'package:aming_kit/aming_kit.dart';
-import 'package:aming_kit/utils/route_observer.dart';
-import 'package:aming_kit/utils/router.dart';
-import 'package:flutter/material.dart';
 
 @optionalTypeArgs
 abstract class OuiState<T extends StatefulWidget> extends State with RouteAware {
@@ -22,34 +19,12 @@ abstract class OuiState<T extends StatefulWidget> extends State with RouteAware 
     routeObserver.subscribe(this, ModalRoute.of(context)!);
   }
 
-
-
   @override
   void dispose() {
     routeObserver.unsubscribe(this);
     super.dispose();
   }
 
-
-  @override
-  void didPushNext() {
-    super.didPushNext();
-  }
-
-  @override
-  void didPop() {
-    super.didPop();
-  }
-
-  @override
-  void didPush() {
-    super.didPush();
-  }
-
-  @override
-  void didPopNext() {
-    super.didPopNext();
-  }
 
   // // 从一个PageRoute路由回到当前widget 所在的路由时候的回调  首次加载不触发
   // void onShow() {}

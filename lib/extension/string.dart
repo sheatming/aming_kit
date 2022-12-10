@@ -85,4 +85,7 @@ extension RegExpString on String{
   bool get isEmail{
     return OuiValidator.isEmail(this);
   }
+  bool get isUrl{
+    return OuiValidator.isUrl(this);
+  }
 }

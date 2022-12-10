@@ -1,6 +1,5 @@
 library aming_kit;
 
-
 export './extension/color.dart';
 export './extension/list.dart';
 export './extension/map.dart';
@@ -23,6 +22,7 @@ export './utils/route_observer.dart';
 export './utils/router.dart';
 export './utils/size.dart';
 export './utils/state.dart';
+export './utils/theme.dart';
 export './utils/time.dart';
 export './utils/timeline.dart';
 export './utils/toast.dart';

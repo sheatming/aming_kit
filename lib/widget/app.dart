@@ -1,5 +1,4 @@
 import 'package:aming_kit/aming_kit.dart';
-import 'package:event_bus/event_bus.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
@@ -31,8 +30,9 @@ class OuiMaterialApp extends StatefulWidget {
 
 
   static void restartApp({BuildContext? context}) {
-    BuildContext _context = context ?? OuiGlobal.globalContext!;
-    _context.findAncestorStateOfType<_OuiMaterialApp>()?.restartApp();
+    BuildContext tmpContext = context ?? OuiGlobal.globalContext!;
+    if(!isNotNull(tmpContext)) throw contextError;
+    tmpContext.findAncestorStateOfType<_OuiMaterialApp>()?.restartApp();
   }
 
   @override

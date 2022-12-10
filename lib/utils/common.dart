@@ -91,12 +91,8 @@ Map<String, OverlayEntry?> entrys = {};
 
 void openOverlay(String key, Widget child, {BuildContext? context}){
 
-  BuildContext? _context = context ?? OuiGlobal.globalContext;
-  // if(!isNotNull(child)) return;
-  if(!isNotNull(_context)){
-    log.error("context无效");
-    return;
-  }
+  BuildContext? tmpContext = context ?? OuiGlobal.globalContext;
+  if(!isNotNull(tmpContext)) throw contextError;
 
   if(isNotNull(entrys[key])){
     entrys[key]?.remove();
@@ -106,7 +102,7 @@ void openOverlay(String key, Widget child, {BuildContext? context}){
     return child;
   });
 
-  setTimeout(() => Overlay.of(_context!)!.insert(entrys[key]!), time: 100);
+  setTimeout(() => Overlay.of(tmpContext!)!.insert(entrys[key]!), time: 100);
 }
 
 void closeOverlay(String key){

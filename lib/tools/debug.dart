@@ -130,7 +130,7 @@ class OuiDevTools extends StatefulWidget {
   }
 
   @override
-  _OuiDevTools createState() => _OuiDevTools();
+  State createState() => _OuiDevTools();
 }
 
 class _OuiDevTools extends State<OuiDevTools> {
@@ -160,17 +160,14 @@ class _OuiDevTools extends State<OuiDevTools> {
         if(isNotNull(widget.option8)) options.add(widget.option8!);
         if(isNotNull(widget.option9)) options.add(widget.option9!);
 
-        double _x = OuiCache.getDouble(_configDX, defValue: 0.0);
-        double _y = OuiCache.getDouble(_configDY, defValue: kToolbarHeight + 100);
+        double x = OuiCache.getDouble(_configDX, defValue: 0.0);
+        double y = OuiCache.getDouble(_configDY, defValue: kToolbarHeight + 100);
         // if(_x != 0 && (_x > OuiSize.screenW() || _x < OuiSize.screenW())){
         //     log.info(_x);
         //     _x = OuiSize.screenW();
         //     log.info(_x);
         // }
-        offset = Offset(
-          _x,
-          _y,
-        );
+        offset = Offset(x, y);
       });
     }
   }
@@ -226,16 +223,16 @@ class _OuiDevTools extends State<OuiDevTools> {
           onPanEnd: (detail) {
             double screenWidget = OuiSize.screenWidth() - _size;
             double screen50Widget = screenWidget / 2;
-            Offset? _offset = offset;
-            Offset? _offset2 = offset;
+            Offset? offset1 = offset;
+            Offset? offset2 = offset;
             if(offset!.dx > screen50Widget){
-              _offset2 = Offset(screenWidget, 0);
+              offset2 = Offset(screenWidget, 0);
             } else {
-              _offset = Offset(0, offset!.dy);
-              _offset2 = const Offset(0, 0);
+              offset1 = Offset(0, offset!.dy);
+              offset2 = const Offset(0, 0);
             }
             setState(() {
-              offset = _calOffset(MediaQuery.of(context).size, _offset!, _offset2!);
+              offset = _calOffset(MediaQuery.of(context).size, offset1!, offset2!);
               OuiCache.setDouble(_configDX, offset!.dx);
               OuiCache.setDouble(_configDY, offset!.dy);
             });
@@ -320,39 +317,36 @@ class _OuiDevTools extends State<OuiDevTools> {
     );
   }
 
-  var x;
   void _open(){
     if(!isOpen){
       setState(() {
         isOpen = true;
         _opacity = 0.3;
-        x = setTimeout((){
+        setTimeout((){
           setState(() {
             isOpen = false;
             _opacity = 0;
           });
-        }, time: 5000);
+        }, time: 5000, key: "debugToolX");
       });
     }
   }
 
   Widget _btn(OuiDevOption option){
-    GestureTapCallback? _onClick = option.onClick;
-    String? _text = option.text;
-    IconData? _icon = option.icon;
-    
-    
+    GestureTapCallback? onClick = option.onClick;
+    String? text = option.text;
+    IconData? icon = option.icon;
 
     return Visibility(
       visible: isOpen,
       child: GestureDetector(
         onTap: (){
           setState(() {
-            if(isNotNull(x)) x?.cancel();
+            clearTimeout("debugToolX");
             isOpen = false;
             _opacity = 0;
           });
-          if(isNotNull(_onClick)) _onClick!();
+          if(isNotNull(onClick)) onClick!();
         },
 
         child: Container(
@@ -362,17 +356,17 @@ class _OuiDevTools extends State<OuiDevTools> {
           decoration: const BoxDecoration(
           ),
           child: Center(
-            child: isNotNull(_onClick) ? Column(
+            child: isNotNull(onClick) ? Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
                   height: 40,
                   width: 40,
                   child: Center(
-                    child: Icon(_icon, color: Colors.white),
+                    child: Icon(icon, color: Colors.white),
                   ),
                 ),
-                Text(_text ?? "",
+                Text(text ?? "",
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
@@ -426,18 +420,18 @@ class OuiRunTimePoint{
 
   static void endPoint(String name) async{
     if(pointLog.containsKey(name)){
-      Map<String, dynamic>? _tmp = pointLog[name];
-      _tmp!['ep'] = DateTime.now().millisecondsSinceEpoch;
-      pointLog[name] = _tmp;
+      Map<String, dynamic>? tmp = pointLog[name];
+      tmp!['ep'] = DateTime.now().millisecondsSinceEpoch;
+      pointLog[name] = tmp;
     }
   }
 
   static int getMS(String name) {
     if(pointLog.containsKey(name)){
-      Map<String, dynamic>? _tmp = pointLog[name];
-      if(_tmp!['ep']! == 0) return -2;
-      if(_tmp['sp']! == 0) return -1;
-      return _tmp['ep']! - _tmp['sp']!;
+      Map<String, dynamic>? tmp = pointLog[name];
+      if(tmp!['ep']! == 0) return -2;
+      if(tmp['sp']! == 0) return -1;
+      return tmp['ep']! - tmp['sp']!;
     } else {
       return -2;
     }

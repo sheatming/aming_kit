@@ -1,11 +1,7 @@
-
-
-/**
- * @Author: Sky24n
- * @GitHub: https://github.com/Sky24n
- * @Description: Timeline Util.
- * @Date: 2018/10/3
- */
+/// @Author: Sky24n
+/// @GitHub: https://github.com/Sky24n
+/// @Description: Timeline Util.
+/// @Date: 2018/10/3
 
 import 'common.dart';
 import 'date.dart';

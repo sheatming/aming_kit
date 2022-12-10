@@ -7,3 +7,9 @@ class OuiGlobal{
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   static BuildContext? get globalContext => navigatorKey.currentState?.overlay?.context;
 }
+
+FlutterError contextError = FlutterError(
+'[context] 无效 \n'
+'请在[MaterialApp]中将[OuiGlobal.navigatorKey]注册到[navigatorKey].\n'
+"或直接使用[OuiMaterialApp] "
+);
