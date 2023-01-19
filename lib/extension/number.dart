@@ -28,6 +28,16 @@ extension ExtInt on int {
     }
     return t;
   }
+
+  DateTime? get toDateTimeFromMilliseconds{
+    if(!isNotNull(this)) return null;
+    return DateTime.fromMillisecondsSinceEpoch(this);
+  }
+
+  DateTime? get toDateTimeFromSeconds{
+    if(!isNotNull(this)) return null;
+    return DateTime.fromMillisecondsSinceEpoch(this * 1000);
+  }
 }
 
 

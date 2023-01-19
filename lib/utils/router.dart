@@ -37,7 +37,6 @@ class OuiRoute {
             handlerFunc: (BuildContext? context, Map<String, dynamic> res) {
               String route = "_${page.runtimeType.toString()}";
               String routeState = "_${page.runtimeType.toString()}State";
-
               if(!isNotNull(res)) res = {};
 
               if(isNotNull(params[route])) params.remove(route);
@@ -103,8 +102,9 @@ getParams(String field, object, {defValue, bool isArgs = false}){
     });
     return tmpParams;
   }
-  if(isNotNull(OuiRoute.params[route])){
-    return OuiRoute.params[route]![field]?.first ?? defValue;
+  if(isNotNull(OuiRoute.params[route]) && isNotNull(OuiRoute.params[route]![field])){
+    var tmpParam = OuiRoute.params[route]![field]?.first;
+    return tmpParam;
   }
   return defValue;
 }
@@ -118,7 +118,10 @@ getArgs(object, {defValue}){
   }
 }
 
-void goback({BuildContext? context, Object? data}){
-  return Navigator.pop(context ?? OuiGlobal.globalContext!, data);
+void goback({BuildContext? context, Object? data, int delta = 1}){
+  NavigatorState navigatorState = Navigator.of(context ?? OuiGlobal.globalContext!);
+  for(var item in (delta - 1).toList){
+    navigatorState..pop(data);
+  }
 }
 

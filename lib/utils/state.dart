@@ -14,16 +14,18 @@ abstract class OuiState<T extends StatefulWidget> extends State with RouteAware 
   getRouteArgs({defValue}) => getArgs(this, defValue: defValue);
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context)!);
-  }
-
-  @override
-  void dispose() {
-    routeObserver.unsubscribe(this);
-    super.dispose();
-  }
+  T get getWidget => widget as T;
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   routeObserver.subscribe(this, ModalRoute.of(context)!);
+  // }
+  //
+  // @override
+  // void dispose() {
+  //   routeObserver.unsubscribe(this);
+  //   super.dispose();
+  // }
 
 
   // // 从一个PageRoute路由回到当前widget 所在的路由时候的回调  首次加载不触发
@@ -36,5 +38,26 @@ abstract class OuiState<T extends StatefulWidget> extends State with RouteAware 
   // void onAppBackground() {}
   // // 触发app 前台 回调
   // void onAppForeground() {}
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  @override
+  void didUpdateWidget(covariant T oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+
+    super.dispose();
+  }
 
 }

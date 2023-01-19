@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:aming_kit/aming_kit.dart';
+import 'package:fast_barcode_scanner/fast_barcode_scanner.dart';
 import 'package:r_scan/r_scan.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -25,54 +26,41 @@ class OuiScan extends StatefulWidget{
 }
 
 class _OuiScan extends State<OuiScan>{
-  List<RScanCameraDescription>? rScanCameras;
-  RScanCameraController? _controller;
+  // List<RScanCameraDescription>? rScanCameras;
+  // RScanCameraController? _controller;
   bool isFirst = true;
   double _opacity = 1;
+  final controller = CameraController();
 
-  void initCamera() async{
-    rScanCameras = await availableRScanCameras();
-    setTimeout((){
-      if(mounted){
-        setState(() {
-          _opacity = 0;
-        });
-      }
-    }, time: 5000);
-
-    if(isNotNull(rScanCameras)){
-      _controller = RScanCameraController(rScanCameras![0], RScanCameraResolutionPreset.max)
-        ..addListener(() {
-          if(!widget.continuous){
-            final result = _controller?.result;
-            if (result != null) {
-              if (isFirst) {
-                isFirst = false;
-                if(isNotNull(widget.onScan)) widget.onScan!(result.message);
-              }
-            }
-          } else {
-            final result = _controller?.result;
-            if (result != null) {
-              if(widget.onScan != null) widget.onScan!(result.message);
-            }
-          }
-        })
-        ..initialize().then((_) {
-          if (!mounted) {
-            return;
-          }
-          setState(() {});
-        });
-    }
-
-  }
+  // void initCamera() async{
+  //   rScanCameras = await availableRScanCameras();
+  //   setTimeout((){
+  //     if(mounted){
+  //       setState(() {
+  //         _opacity = 0;
+  //       });
+  //     }
+  //   }, time: 5000);
+  //
+  //   if(isNotNull(rScanCameras)){
+  //     _controller = RScanCameraController(rScanCameras!.first, RScanCameraResolutionPreset.medium)
+  //       ..addListener(_listener)
+  //       ..initialize().then((_) {
+  //         if (!mounted) {
+  //           return;
+  //         }
+  //         print("相机初始化");
+  //         setState(() {});
+  //       });
+  //   }
+  //
+  // }
 
   @override
   void initState() {
     Wakelock.enable();
     // _alignment = _start;
-    initCamera();
+    // initCamera();
     super.initState();
 
     // setTimeout(() => setState((){
@@ -80,17 +68,37 @@ class _OuiScan extends State<OuiScan>{
     // }), time: 100);
   }
 
+  // void _listener(){
+  //   var result = _controller?.result;
+  //   if (mounted) {
+  //     setState(() {});
+  //   }
+  //   if(!widget.continuous){
+  //     if (result != null) {
+  //       if (isFirst) {
+  //         isFirst = false;
+  //         if(isNotNull(widget.onScan)) widget.onScan!(result.message);
+  //       }
+  //     }
+  //   } else {
+  //     if (result != null) {
+  //       if(widget.onScan != null) widget.onScan!(result.message);
+  //     }
+  //   }
+  // }
+
   @override
   void dispose() {
+    // _controller?.removeListener(_listener);
     // _controller?.dispose();
     Wakelock.disable();
     super.dispose();
   }
 
-  @override
-  void didUpdateWidget(OuiScan oldWidget) {
-    super.didUpdateWidget(oldWidget);
-  }
+  // @override
+  // void didUpdateWidget(OuiScan oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -151,37 +159,63 @@ class _OuiScan extends State<OuiScan>{
 
 
   Widget _widget(){
-      if(isNotNull(rScanCameras) && isNotNull(_controller)){
-        if(_controller?.value.isInitialized == true){
+      // if(isNotNull(rScanCameras) && isNotNull(_controller)){
+      //   if(_controller?.value.isInitialized == true){
           return SizedBox(
             height: MediaQueryData.fromWindow(window).size.height,
-            width: _controller!.value.previewSize?.width,
+            // width: _controller!.value.previewSize?.width,
             child: OverflowBox(
               alignment: Alignment.center,
               maxHeight: MediaQueryData.fromWindow(window).size.height,
               maxWidth: MediaQueryData.fromWindow(window).size.width + kToolbarHeight + MediaQueryData.fromWindow(window).padding.top + MediaQueryData.fromWindow(window).padding.bottom,
-              child: AspectRatio(
-                aspectRatio: _controller!.value.aspectRatio,
-                child: RScanCamera(_controller!),
+              // child: AspectRatio(
+              //   aspectRatio: _controller!.value.aspectRatio,
+              //   child: RScanCamera(_controller!),
+              child: BarcodeCamera(
+                types: const [
+                  BarcodeType.qr
+                ],
+                resolution: Resolution.hd720,
+                framerate: Framerate.fps30,
+                position: CameraPosition.back,
+                mode: DetectionMode.pauseDetection,
+                onScan: (code) {
+                  if(!widget.continuous){
+                    if (code.value != null) {
+                      if (isFirst) {
+                        isFirst = false;
+                        if(isNotNull(widget.onScan)) widget.onScan!(code.value);
+                      }
+                    }
+                  } else {
+                    if (code.value != null) {
+                      if(widget.onScan != null) widget.onScan!(code.value);
+                    }
+                  }
+                },
+                children: [
+                  BlurPreviewOverlay(),
+                ],
               ),
+              // ),
             ),
           );
-        } else {
-          return Container();
-        }
-      } else {
-        return Container();
-      }
+        // } else {
+        //   return Container();
+        // }
+      // } else {
+      //   return Container();
+      // }
 
   }
 
-  Future<bool?> getFlashMode() async {
-    bool? isOpen = false;
-    try {
-      isOpen = await _controller!.getFlashMode();
-    } catch (_) {}
-    return isOpen;
-  }
+  // Future<bool?> getFlashMode() async {
+  //   bool? isOpen = false;
+  //   try {
+  //     isOpen = await _controller!.getFlashMode();
+  //   } catch (_) {}
+  //   return isOpen;
+  // }
 
   // Widget _buildFlashBtn(BuildContext context, AsyncSnapshot<bool> snapshot) {
   //   return snapshot.hasData

@@ -19,7 +19,6 @@ class OuiApp{
 
   static Future run({
     required Widget appChild,
-    double designWidthSize = 750,
     SystemUiOverlayStyle? systemUiOverlayStyle,
     Function<Widget>(String message, Object error)? errorWidgetFn,
   }) async{
@@ -51,7 +50,6 @@ class OuiApp{
 
     return runZonedGuarded(() async {
         WidgetsFlutterBinding.ensureInitialized();
-        await OuiSize.init(designWidthSize);
         Future.delayed(const Duration(milliseconds: 300), () =>  runApp(appChild));
         if(isNotNull(systemUiOverlayStyle)) SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle!);
       },

@@ -15,6 +15,7 @@ class OuiMaterialApp extends StatefulWidget {
     this.title = '',
     this.navigatorObservers,
     this.onInit,
+    this.designScreenWidth = 750.0,
   }) : super(key: key);
 
   final Map<String, Widget>? routes;
@@ -27,6 +28,7 @@ class OuiMaterialApp extends StatefulWidget {
   final String title;
   final List<NavigatorObserver>? navigatorObservers;
   final Future<void>? onInit;
+  final double designScreenWidth;
 
 
   static void restartApp({BuildContext? context}) {
@@ -39,7 +41,7 @@ class OuiMaterialApp extends StatefulWidget {
   State<OuiMaterialApp> createState() => _OuiMaterialApp();
 }
 
-class _OuiMaterialApp extends State<OuiMaterialApp> {
+class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver {
 
   Key appKey = UniqueKey();
 
@@ -47,25 +49,35 @@ class _OuiMaterialApp extends State<OuiMaterialApp> {
   void initState() {
     // OuiSize.init(widget.designWidthSize);
     //渲染前
+    OuiSize.init(number: widget.designScreenWidth);
     initApp();
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     //渲染后
+  }
+
+
+
+  @override
+  void didChangeMetrics(){
+    OuiSize.init(number: widget.designScreenWidth, isForce: true);
+    super.didChangeMetrics();
   }
 
   void initApp() async{
     OuiGlobal.initMaterialApp = true;
     await OuiCache.init();
-    // OuiGlobal.eventBus = EventBus();
     OuiRoute.init(widget.routes);
     OuiApp.initAppDir();
     OuiApp.initPackageInfo();
     if(isNotNull(widget.onInit)) await widget.onInit!;
-
   }
+
 
   @override
   void dispose() {
     //销毁前
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
     //销毁后
   }

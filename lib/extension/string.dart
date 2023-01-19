@@ -19,6 +19,24 @@ extension OtherString on String{
     return double.parse(this);
   }
 
+  int get toMilliseconds{
+    if(!isNotNull(this)) return 0;
+    try{
+      return DateTime.parse(this).millisecondsSinceEpoch;
+    } catch (e){
+      return 0;
+    }
+  }
+
+  int get toSeconds{
+    if(!isNotNull(this)) return 0;
+    try{
+      return DateTime.parse(this).millisecondsSinceEpoch ~/ 1000;
+    } catch (e){
+      return 0;
+    }
+  }
+
   String get first{
     if(length > 0){
       return this[0];

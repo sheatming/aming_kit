@@ -7,5 +7,8 @@ bool isRelease = kReleaseMode;
 
 bool isIOS = Platform.isIOS;
 bool isAndroid = Platform.isAndroid;
+bool isMacOS = Platform.isMacOS;
+bool isWindows = Platform.isWindows;
+bool isWeb = kIsWeb;
 
 

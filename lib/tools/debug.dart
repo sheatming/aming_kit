@@ -246,9 +246,9 @@ class _OuiDevTools extends State<OuiDevTools> {
           },
 
           child: AnimatedCrossFade(
-            duration: const Duration(milliseconds: 200),
-            // firstCurve: Curves.easeInCirc,
-            // secondCurve: Curves.easeInToLinear,
+            duration: const Duration(milliseconds: 100),
+            firstCurve: Curves.easeInSine,
+            secondCurve: Curves.easeInSine,
             // sizeCurve: Curves.bounceOut,
             crossFadeState: !isOpen ? CrossFadeState.showFirst : CrossFadeState.showSecond,
             secondChild: Material(

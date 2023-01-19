@@ -280,7 +280,12 @@ class OuiApi {
     ResponseModel responseModel = ResponseModel(response.statusMessage, response.statusCode, response.data, response.headers.map);
     if(skipResultHandle == true) return responseModel;
     if(isNotNull(_resultHandle)) {
-      return _resultHandle!(response);
+      var res = _resultHandle!(response);
+      if(isNotNull(res)){
+        return res;
+      } else {
+        return responseModel;
+      }
     } else {
       return responseModel;
     }
