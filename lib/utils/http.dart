@@ -99,11 +99,13 @@ class OuiApi {
     try {
       log.debug(file.path, tag: "下载路径");
 
+      if(_loading) showLoading();
       Response response = await dio.download(
         url,
         file.path,
         onReceiveProgress: onProgress,
       );
+      if(_loading) closeToast();
 
       _pushLog(
         requestOptions: response.requestOptions,
@@ -248,7 +250,9 @@ class OuiApi {
       path += "?${Map.from(data).toUrl}";
     }
     try{
+      if(_loading) showLoading();
       var result = await dio.request(path, data: data);
+      if(_loading) closeToast();
       _pushLog(
         queryTime: queryTime,
         requestOptions: result.requestOptions,

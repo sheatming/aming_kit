@@ -29,8 +29,9 @@ class OuiCache{
     if(!isNotNull(_prefs)){
       _prefs = await SharedPreferences.getInstance();
     }
-    if(!isNotNull(value)){
-      return remove(key);
+    remove(key);
+    if(value == null){
+      return false;
     }
     switch(type){
       case CacheType.bool:

@@ -1,104 +1,47 @@
 import 'dart:ui';
 import 'package:aming_kit/aming_kit.dart';
 import 'package:fast_barcode_scanner/fast_barcode_scanner.dart';
-import 'package:r_scan/r_scan.dart';
 import 'package:wakelock/wakelock.dart';
 
 class OuiScan extends StatefulWidget{
   const OuiScan({Key? key,
+    required this.types,
     this.appBar,
-    this.continuous = false,
     this.child,
     this.title,
     this.onScan,
+    this.onError,
     this.hintText,
   }):super(key: key);
 
-  final bool continuous;
   final Widget? child;
   final PreferredSizeWidget? appBar;
   final String? title;
   final String? hintText;
   final ValueChanged? onScan;
+  final VoidCallback? onError;
+  final List<BarcodeType> types;
 
   @override
   State<StatefulWidget> createState() => _OuiScan();
 }
 
 class _OuiScan extends State<OuiScan>{
-  // List<RScanCameraDescription>? rScanCameras;
-  // RScanCameraController? _controller;
   bool isFirst = true;
-  double _opacity = 1;
+  double opacity = 1;
   final controller = CameraController();
-
-  // void initCamera() async{
-  //   rScanCameras = await availableRScanCameras();
-  //   setTimeout((){
-  //     if(mounted){
-  //       setState(() {
-  //         _opacity = 0;
-  //       });
-  //     }
-  //   }, time: 5000);
-  //
-  //   if(isNotNull(rScanCameras)){
-  //     _controller = RScanCameraController(rScanCameras!.first, RScanCameraResolutionPreset.medium)
-  //       ..addListener(_listener)
-  //       ..initialize().then((_) {
-  //         if (!mounted) {
-  //           return;
-  //         }
-  //         print("相机初始化");
-  //         setState(() {});
-  //       });
-  //   }
-  //
-  // }
 
   @override
   void initState() {
     Wakelock.enable();
-    // _alignment = _start;
-    // initCamera();
     super.initState();
-
-    // setTimeout(() => setState((){
-    //   _alignment = _end;
-    // }), time: 100);
   }
-
-  // void _listener(){
-  //   var result = _controller?.result;
-  //   if (mounted) {
-  //     setState(() {});
-  //   }
-  //   if(!widget.continuous){
-  //     if (result != null) {
-  //       if (isFirst) {
-  //         isFirst = false;
-  //         if(isNotNull(widget.onScan)) widget.onScan!(result.message);
-  //       }
-  //     }
-  //   } else {
-  //     if (result != null) {
-  //       if(widget.onScan != null) widget.onScan!(result.message);
-  //     }
-  //   }
-  // }
 
   @override
   void dispose() {
-    // _controller?.removeListener(_listener);
-    // _controller?.dispose();
     Wakelock.disable();
     super.dispose();
   }
-
-  // @override
-  // void didUpdateWidget(OuiScan oldWidget) {
-  //   super.didUpdateWidget(oldWidget);
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -106,8 +49,6 @@ class _OuiScan extends State<OuiScan>{
       body: Stack(
         children: <Widget>[
           _widget(),
-
-
           Padding(
             padding: EdgeInsets.only(
               bottom: OuiSize.touchBarHeight() + 100.px,
@@ -116,7 +57,7 @@ class _OuiScan extends State<OuiScan>{
               alignment: Alignment.bottomCenter,
               child: AnimatedOpacity(
                 duration: const Duration(seconds: 1),
-                opacity: _opacity,
+                opacity: opacity,
                 curve: Curves.easeInOut,
                 child: Text(widget.hintText ?? "",
                   style: Theme.of(context).textTheme.bodyText2?.copyWith(
@@ -126,8 +67,6 @@ class _OuiScan extends State<OuiScan>{
               ),
             ),
           ),
-
-
 
           Offstage(
             offstage: widget.appBar != null,
@@ -145,13 +84,11 @@ class _OuiScan extends State<OuiScan>{
                       color: Colors.white,
                     ),
                   ),
-
                   if(isNotNull(widget.child)) widget.child!,
                 ],
               ),
             ),
           ),
-
         ],
       ),
     );
@@ -159,124 +96,40 @@ class _OuiScan extends State<OuiScan>{
 
 
   Widget _widget(){
-      // if(isNotNull(rScanCameras) && isNotNull(_controller)){
-      //   if(_controller?.value.isInitialized == true){
-          return SizedBox(
-            height: MediaQueryData.fromWindow(window).size.height,
-            // width: _controller!.value.previewSize?.width,
-            child: OverflowBox(
-              alignment: Alignment.center,
-              maxHeight: MediaQueryData.fromWindow(window).size.height,
-              maxWidth: MediaQueryData.fromWindow(window).size.width + kToolbarHeight + MediaQueryData.fromWindow(window).padding.top + MediaQueryData.fromWindow(window).padding.bottom,
-              // child: AspectRatio(
-              //   aspectRatio: _controller!.value.aspectRatio,
-              //   child: RScanCamera(_controller!),
-              child: BarcodeCamera(
-                types: const [
-                  BarcodeType.qr
-                ],
-                resolution: Resolution.hd720,
-                framerate: Framerate.fps30,
-                position: CameraPosition.back,
-                mode: DetectionMode.pauseDetection,
-                onScan: (code) {
-                  if(!widget.continuous){
-                    if (code.value != null) {
-                      if (isFirst) {
-                        isFirst = false;
-                        if(isNotNull(widget.onScan)) widget.onScan!(code.value);
-                      }
-                    }
-                  } else {
-                    if (code.value != null) {
-                      if(widget.onScan != null) widget.onScan!(code.value);
-                    }
-                  }
-                },
-                children: [
-                  BlurPreviewOverlay(),
-                ],
-              ),
-              // ),
-            ),
-          );
-        // } else {
-        //   return Container();
-        // }
-      // } else {
-      //   return Container();
-      // }
-
+    return SizedBox(
+      height: MediaQueryData.fromWindow(window).size.height,
+      child: OverflowBox(
+        alignment: Alignment.center,
+        maxHeight: MediaQueryData.fromWindow(window).size.height,
+        maxWidth: MediaQueryData.fromWindow(window).size.width + kToolbarHeight + MediaQueryData.fromWindow(window).padding.top + MediaQueryData.fromWindow(window).padding.bottom,
+        child: BarcodeCamera(
+          types: widget.types,
+          resolution: Resolution.hd720,
+          framerate: Framerate.fps30,
+          position: CameraPosition.back,
+          mode: DetectionMode.pauseDetection,
+          onScan: (code) {
+            if(isNotNull(code.value)){
+              if(isNotNull(widget.onScan)){
+                widget.onScan!(code.value);
+              }
+            } else {
+              if(isNotNull(widget.onError)){
+                widget.onError!();
+              }
+            }
+          },
+          onError: (context, err) {
+            if(isNotNull(widget.onError)){
+              widget.onError!();
+            }
+            return Container();
+          },
+          children: const [
+            BlurPreviewOverlay(),
+          ],
+        ),
+      ),
+    );
   }
-
-  // Future<bool?> getFlashMode() async {
-  //   bool? isOpen = false;
-  //   try {
-  //     isOpen = await _controller!.getFlashMode();
-  //   } catch (_) {}
-  //   return isOpen;
-  // }
-
-  // Widget _buildFlashBtn(BuildContext context, AsyncSnapshot<bool> snapshot) {
-  //   return snapshot.hasData
-  //       ? Padding(
-  //     padding:  const EdgeInsets.only(
-  //         bottom: 12
-  //     ),
-  //     child: GestureDetector(
-  //       onTap: (){
-  //         if (snapshot.data == true) {
-  //           _controller!.setFlashMode(false);
-  //         } else {
-  //           _controller!.setFlashMode(true);
-  //         }
-  //         setState(() {});
-  //       },
-  //       child: Container(
-  //         color: Colors.transparent,
-  //         child: AnimatedCrossFade(
-  //           duration: Duration(milliseconds: 200),
-  //           crossFadeState: snapshot.data == true ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-  //           firstChild: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             children: const <Widget>[
-  //               Icon(Icons.light_mode, size: 26, color: Colors.grey),
-  //               Padding(
-  //                 padding: EdgeInsets.only(
-  //                     top: 5
-  //                 ),
-  //                 child: Text('轻触点亮',
-  //                   style: TextStyle(
-  //                       fontSize: 12,
-  //                       color: Colors.grey
-  //                   ),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //           secondChild: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             children: const [
-  //               Icon(Icons.light_mode_outlined, size: 26, color: Colors.grey),
-  //               Padding(
-  //                 padding: EdgeInsets.only(
-  //                     top: 5
-  //                 ),
-  //                 child: Text('轻触关闭',
-  //                   style: TextStyle(
-  //                       fontSize: 12,
-  //                       color: Colors.grey
-  //                   ),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   )
-  //       : Container();
-  // }
-
-
 }

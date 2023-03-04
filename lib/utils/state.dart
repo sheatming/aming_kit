@@ -1,8 +1,7 @@
 import 'package:aming_kit/aming_kit.dart';
 
 @optionalTypeArgs
-abstract class OuiState<T extends StatefulWidget> extends State with RouteAware {
-
+abstract class OuiState<T extends StatefulWidget> extends State<StatefulWidget> with RouteAware {
   /// 获取当前State的路由参数
   @protected
   @mustCallSuper
@@ -14,7 +13,10 @@ abstract class OuiState<T extends StatefulWidget> extends State with RouteAware 
   getRouteArgs({defValue}) => getArgs(this, defValue: defValue);
 
   @override
-  T get getWidget => widget as T;
+  T get widget => super.widget as T;
+  Map<String, dynamic> get params => getRouteParams("-");
+  T get args => getArgs(this);
+
   // @override
   // void didChangeDependencies() {
   //   super.didChangeDependencies();
@@ -56,7 +58,6 @@ abstract class OuiState<T extends StatefulWidget> extends State with RouteAware 
 
   @override
   void dispose() {
-
     super.dispose();
   }
 

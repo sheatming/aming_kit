@@ -12,17 +12,17 @@ extension OtherString on String{
 
   int get toInt{
     if(!isNotNull(this)) return 0;
-    return int.parse(this);
+    return int.tryParse(this) ?? 0;
   }
 
   double get toDouble{
-    return double.parse(this);
+    return double.tryParse(this) ?? 0;
   }
 
   int get toMilliseconds{
     if(!isNotNull(this)) return 0;
     try{
-      return DateTime.parse(this).millisecondsSinceEpoch;
+      return DateTime.tryParse(this)?.millisecondsSinceEpoch ?? 0;
     } catch (e){
       return 0;
     }
@@ -31,7 +31,7 @@ extension OtherString on String{
   int get toSeconds{
     if(!isNotNull(this)) return 0;
     try{
-      return DateTime.parse(this).millisecondsSinceEpoch ~/ 1000;
+      return DateTime.tryParse(this)?.millisecondsSinceEpoch ?? 0 ~/ 1000;
     } catch (e){
       return 0;
     }
@@ -105,5 +105,8 @@ extension RegExpString on String{
   }
   bool get isUrl{
     return OuiValidator.isUrl(this);
+  }
+  bool get isFileUrl{
+    return OuiValidator.isFileUrl(this);
   }
 }

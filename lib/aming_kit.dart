@@ -18,6 +18,7 @@ export './utils/focus.dart';
 export './utils/global.dart';
 export './utils/http.dart';
 export './utils/log.dart';
+export './utils/permission.dart';
 export './utils/route_observer.dart';
 export './utils/router.dart';
 export './utils/size.dart';
@@ -28,6 +29,7 @@ export './utils/timeline.dart';
 export './utils/toast.dart';
 
 export './widget/app.dart';
+export './widget/button.dart';
 export './widget/safe_touch_bar.dart';
 export './widget/scan.dart';
 

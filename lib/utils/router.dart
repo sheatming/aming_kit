@@ -35,6 +35,7 @@ class OuiRoute {
     router!.define(routePath,
         handler: Handler(
             handlerFunc: (BuildContext? context, Map<String, dynamic> res) {
+
               String route = "_${page.runtimeType.toString()}";
               String routeState = "_${page.runtimeType.toString()}State";
               if(!isNotNull(res)) res = {};

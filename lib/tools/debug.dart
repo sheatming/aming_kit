@@ -278,7 +278,7 @@ class _OuiDevTools extends State<OuiDevTools> {
               height: _size,
               width: _size,
               decoration: BoxDecoration(
-                color: Theme.of(context).textTheme.headline6!.color!.withOpacity(0.2 + _opacity),
+                // color: Theme.of(context).textTheme.headline6!.color!.withOpacity(0.2 + _opacity),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(
@@ -287,7 +287,8 @@ class _OuiDevTools extends State<OuiDevTools> {
                   height: _size - 15,
                   width: _size - 15,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.5 + _opacity),
+                    // color: Colors.white.withOpacity(0.5 + _opacity),
+                    color: Theme.of(context).textTheme.headline6!.color!.withOpacity(0.2 + _opacity),
                     borderRadius: BorderRadius.circular(90),
                   ),
                   child: Center(
