@@ -252,7 +252,7 @@ class _OuiDevTools extends State<OuiDevTools> {
             // sizeCurve: Curves.bounceOut,
             crossFadeState: !isOpen ? CrossFadeState.showFirst : CrossFadeState.showSecond,
             secondChild: Material(
-              color: Theme.of(context).textTheme.headline6!.color!.withOpacity(0.5 + _opacity),
+              color: Colors.black!.withOpacity(0.5 + _opacity),
               borderRadius: BorderRadius.circular(10),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
@@ -288,7 +288,7 @@ class _OuiDevTools extends State<OuiDevTools> {
                   width: _size - 15,
                   decoration: BoxDecoration(
                     // color: Colors.white.withOpacity(0.5 + _opacity),
-                    color: Theme.of(context).textTheme.headline6!.color!.withOpacity(0.2 + _opacity),
+                    color: Colors.black!.withOpacity(0.2 + _opacity),
                     borderRadius: BorderRadius.circular(90),
                   ),
                   child: Center(

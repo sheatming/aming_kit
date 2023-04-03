@@ -1,5 +1,5 @@
 import 'package:aming_kit/aming_kit.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:bot_toast/bot_toast.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
@@ -16,6 +16,7 @@ class OuiMaterialApp extends StatefulWidget {
     this.navigatorObservers,
     this.onInit,
     this.designScreenWidth = 750.0,
+    this.easyLoading,
   }) : super(key: key);
 
   final Map<String, Widget>? routes;
@@ -29,6 +30,7 @@ class OuiMaterialApp extends StatefulWidget {
   final List<NavigatorObserver>? navigatorObservers;
   final Future<void>? onInit;
   final double designScreenWidth;
+  final EasyLoading? easyLoading;
 
 
   static void restartApp({BuildContext? context}) {
@@ -44,7 +46,7 @@ class OuiMaterialApp extends StatefulWidget {
 class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver {
 
   Key appKey = UniqueKey();
-
+  final botToastBuilder = BotToastInit();
   @override
   void initState() {
     // OuiSize.init(widget.designWidthSize);
@@ -91,6 +93,7 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
 
   @override
   Widget build(BuildContext context) {
+    if(isNotNull(widget.easyLoading)) widget.easyLoading!;
     return KeyedSubtree(
       key: appKey,
       child: MaterialApp(
@@ -98,6 +101,7 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
         navigatorKey: OuiGlobal.navigatorKey,
         navigatorObservers: [
           routeObserver,
+          BotToastNavigatorObserver(),
           if(isNotNull(widget.navigatorObservers))
             ...widget.navigatorObservers!.map((e) => e).toList(),
         ],
@@ -107,8 +111,14 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
         supportedLocales: widget.supportedLocales,
         localizationsDelegates: widget.localizationsDelegates,
         theme: widget.theme,
+        // builder: EasyLoading.init(
+        //   builder: widget.builder,
+        // ),
+        // builder: (context, child) {
+        //   return EasyLoading.init(builder: widget.builder);
+        // },
         builder: EasyLoading.init(
-          builder: widget.builder,
+          builder: (context, child) => botToastBuilder(context, child),
         ),
       ),
     );

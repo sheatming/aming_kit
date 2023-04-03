@@ -28,6 +28,7 @@ dependencies:
   permission_handler: ^10.2.0
   shared_preferences: ^2.0.15
   tinycolor2: ^2.1.0
+  bot_toast: ^4.0.3
 
 #  r_scan:
 #    git:

@@ -574,7 +574,7 @@ Widget _detailText(String title, String text){
         onLongPress: () async{
           if(isNotNull(text)){
             await Clipboard.setData(ClipboardData(text: text));
-            OuiToast.toast("已复制到剪切板");
+            OuiToast.toast(text: "已复制到剪切板");
           }
         },
         child: Text("$title: $text", style: const TextStyle(
@@ -596,7 +596,7 @@ Widget _listText(String text){
         onLongPress: () async{
           if(isNotNull(text)){
             await Clipboard.setData(ClipboardData(text: text));
-            OuiToast.toast("已复制到剪切板");
+            OuiToast.toast(text: "已复制到剪切板");
           }
         },
         child: Text(text, style: const TextStyle(
@@ -743,7 +743,7 @@ Widget _infoItem(title, content){
     child: ListTile(
       onLongPress: () async{
         await Clipboard.setData(ClipboardData(text: "$title: $content"));
-        OuiToast.toast("已复制到剪切板");
+        OuiToast.toast(text: "已复制到剪切板");
       },
       dense: true,
       title: Text(title),

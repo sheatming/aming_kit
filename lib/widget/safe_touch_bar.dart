@@ -1,5 +1,4 @@
 import 'package:aming_kit/aming_kit.dart';
-
 class OuiSafeTouchBar extends StatelessWidget{
   const OuiSafeTouchBar({Key? key, this.backgroundColor = Colors.transparent, this.child}) : super(key: key);
 

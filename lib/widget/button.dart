@@ -117,13 +117,17 @@ class _OuiButton extends State<OuiButton>{
             widget.onClick?.call();
             return;
           } else if(isNotNull(widget.onAsyncClick)){
-            if(mounted) setState(() {
-              _loading = true;
-            });
+            if(mounted) {
+              setState(() {
+                _loading = true;
+              });
+            }
             await widget.onAsyncClick!();
-            if(mounted) setState(() {
-              _loading = false;
-            });
+            if(mounted) {
+              setState(() {
+                _loading = false;
+              });
+            }
           }
         } : null,
         onTapDown: (res) => setState((){

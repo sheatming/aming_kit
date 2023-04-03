@@ -1,11 +1,90 @@
 import '../aming_kit.dart';
 export 'package:permission_handler/permission_handler.dart';
 
+//post_install do |installer|
+//   installer.pods_project.targets.each do |target|
+//     flutter_additional_ios_build_settings(target)
+//
+//     target.build_configurations.each do |config|
+//       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+//         '$(inherited)',
+//         'PERMISSION_EVENTS=1',
+//         'PERMISSION_REMINDERS=1',
+//         'PERMISSION_CONTACTS=1',
+//         'PERMISSION_CAMERA=1',
+//         'PERMISSION_MICROPHONE=1',
+//         'PERMISSION_SPEECH_RECOGNIZER=1',
+//         'PERMISSION_PHOTOS=1',
+//         'PERMISSION_LOCATION=1',
+//         'PERMISSION_NOTIFICATIONS=1',
+//         'PERMISSION_MEDIA_LIBRARY=1',
+//         'PERMISSION_SENSORS=1',
+//         'PERMISSION_BLUETOOTH=1',
+//         'PERMISSION_APP_TRACKING_TRANSPARENCY=1',
+//         'PERMISSION_CRITICAL_ALERTS=1'
+//       ]
+//     end
+//   end
+// end
+
+
 class OuiPermission{
 
   static double? borderRadius;
 
   bool? _isFirst;
+
+  static Future<void> calendar({
+    required Function onHandle,
+    required String description,
+    IconData? iconData,
+    String? title,
+    Function? onError,
+    PermissionDecoration? decoration,
+  }) async => check(
+    permission: Permission.calendar,
+    onHandle: onHandle,
+    iconData: iconData ?? Icons.calendar_month,
+    title: title ?? "获取日历权限",
+    description: description,
+    onError: onError,
+    decoration: decoration,
+  );
+
+  static Future<void> camera({
+    required Function onHandle,
+    required String description,
+    IconData? iconData,
+    String? title,
+    Function? onError,
+    PermissionDecoration? decoration,
+  }) async => check(
+    permission: Permission.camera,
+    onHandle: onHandle,
+    iconData: iconData ?? Icons.camera_alt_outlined,
+    title: title ?? "获取相机权限",
+    description: description,
+    onError: onError,
+    decoration: decoration,
+  );
+
+  static Future<void> contacts({
+    required Function onHandle,
+    required String description,
+    IconData? iconData,
+    String? title,
+    Function? onError,
+    PermissionDecoration? decoration,
+  }) async => check(
+    permission: Permission.contacts,
+    onHandle: onHandle,
+    iconData: iconData ?? Icons.camera_alt_outlined,
+    title: title ?? "获取通讯录权限",
+    description: description,
+    onError: onError,
+    decoration: decoration,
+  );
+
 
   static Future<void> check({
     required Permission permission,
@@ -16,20 +95,25 @@ class OuiPermission{
     Function? onError,
     PermissionDecoration? decoration,
   }) async{
-    PermissionStatus _status = await permission.status;
-    print("当前权限 $_status");
-    _check(_status,
-      granted: () => onHandle(),
-      denied: () => _request(
-        permission: permission,
-        onHandle: onHandle,
-        onError: onError,
-        decoration: decoration,
-        iconData: iconData,
-        title: title,
-        description: description,
-      ),
-    );
+    if(isNotNull(permission)){
+      PermissionStatus _status = await permission!.status;
+      return _check(_status,
+        granted: () => onHandle(),
+        denied: () => _request(
+          permission: permission,
+          onHandle: onHandle,
+          onError: onError,
+          decoration: decoration,
+          iconData: iconData,
+          title: title,
+          description: description,
+        ),
+      );
+    } else {
+      toast("请求失败");
+      if(isNotNull(onError)) onError!();
+    }
+
   }
 
   static Future<void> _check(PermissionStatus status, {
@@ -167,6 +251,32 @@ class OuiPermission{
       },
     );
   }
+
+  // Future<bool> _checkPlatform() async{
+  //   if (isIOS) {
+  //     return permission != Permission.unknown &&
+  //         permission != Permission.sms &&
+  //         permission != Permission.storage &&
+  //         permission != Permission.ignoreBatteryOptimizations &&
+  //         permission != Permission.accessMediaLocation &&
+  //         permission != Permission.activityRecognition &&
+  //         permission != Permission.manageExternalStorage &&
+  //         permission != Permission.systemAlertWindow &&
+  //         permission != Permission.requestInstallPackages &&
+  //         permission != Permission.accessNotificationPolicy &&
+  //         permission != Permission.bluetoothScan &&
+  //         permission != Permission.bluetoothAdvertise &&
+  //         permission != Permission.bluetoothConnect;
+  //   } else {
+  //     return permission != Permission.unknown &&
+  //         permission != Permission.mediaLibrary &&
+  //         permission != Permission.photos &&
+  //         permission != Permission.photosAddOnly &&
+  //         permission != Permission.reminders &&
+  //         permission != Permission.appTrackingTransparency &&
+  //         permission != Permission.criticalAlerts;
+  //   }
+  // }
 }
 
 class PermissionDecoration{
