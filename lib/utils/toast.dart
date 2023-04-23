@@ -1,7 +1,4 @@
 import 'package:aming_kit/aming_kit.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter/material.dart';
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class OuiToast {
@@ -13,16 +10,19 @@ class OuiToast {
     WrapAnimation? wrapAnimation,
     Color? contentColor,
     TextStyle? style,
+    AlignmentGeometry? align = const Alignment(0, 0.8)
   }) async {
     BotToast.showText(
+      duration: duration,
         text: text ?? "",
+        align: align,
         wrapAnimation: wrapAnimation,
         onlyOne: true,
-        contentPadding: contentPadding ?? EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 7),
-        contentColor: contentColor ?? Color(0x50000000),
+        contentPadding: contentPadding ?? const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 7),
+        contentColor: contentColor ?? const Color(0x50000000),
         textStyle: style ?? OuiTheme.bodyMedium!.copyWith(
           color: Colors.white,
-        )!
+        )
     );
   }
 
@@ -52,7 +52,7 @@ class OuiToast {
             width: double.infinity,
             color: Colors.transparent,
             child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
 
                 ),
                 child: Column(
@@ -68,12 +68,12 @@ class OuiToast {
                           //   minWidth: 60,
                           //   minHeight: 60,
                           // ),
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                             vertical: 10,
                             horizontal: 15
                           ),
                           decoration: BoxDecoration(
-                              color: Color(0x50000000),
+                              color: const Color(0x50000000),
                               borderRadius: BorderRadius.circular(10)
                           ),
                           child: Column(
@@ -81,13 +81,13 @@ class OuiToast {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              SpinKitCircle(
+                              const SpinKitCircle(
                                 size: 40,
                                 color: Colors.white,
                               ),
                               if(isNotNull(text))
                                 Padding(
-                                  padding: EdgeInsets.only(
+                                  padding: const EdgeInsets.only(
                                     top: 8,
 
                                   ),

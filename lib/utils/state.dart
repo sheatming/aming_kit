@@ -14,6 +14,10 @@ abstract class OuiState<T extends StatefulWidget> extends State<StatefulWidget> 
 
   @override
   T get widget => super.widget as T;
+
+  @override
+  bool get mounted => super.mounted;
+
   Map<String, dynamic> get params => getRouteParams("-");
   T get args => getArgs(this);
 

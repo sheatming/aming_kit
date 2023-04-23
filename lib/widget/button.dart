@@ -154,7 +154,7 @@ class _OuiButton extends State<OuiButton>{
           borderRadius: BorderRadius.circular(widget.radius ?? 6),
           animationDuration: const Duration(seconds: 0),
           color: Colors.transparent,
-          textStyle: OuiTheme.data()!.textTheme.button!.copyWith(
+          textStyle: OuiTheme.bodyMedium!.copyWith(
             color: _textIconColor(),
           ),
           child: AnimatedContainer(
@@ -178,7 +178,7 @@ class _OuiButton extends State<OuiButton>{
                     color: _textIconColor(),
                   ),
                   child: DefaultTextStyle(
-                    style: OuiTheme.data()!.textTheme.button!.copyWith(
+                    style: OuiTheme.bodyMedium!.copyWith(
                       color: _textIconColor(),
                     ),
                     child: widget.child ?? Container(),
@@ -186,7 +186,7 @@ class _OuiButton extends State<OuiButton>{
                 ),
                 secondChild: SpinKitWave(
                   color: _textIconColor(),
-                  size: OuiTheme.data()!.textTheme.headline6!.fontSize!+5,
+                  size: OuiTheme.bodyMedium!.fontSize!+5,
                   type: Platform.isIOS ? SpinKitWaveType.center : SpinKitWaveType.start,
                 ),
                 crossFadeState: _loading || widget.loading ? CrossFadeState.showSecond : CrossFadeState.showFirst,
@@ -223,18 +223,18 @@ class _OuiButton extends State<OuiButton>{
   }
 
   Color? _textIconColor(){
-    if(_bgc == Colors.transparent) return OuiTheme.data()!.textTheme.button?.color;
+    if(_bgc == Colors.transparent) return OuiTheme.bodyMedium?.color;
     if(_bgc == null) return Colors.transparent;
     if(!widget.enabled) return Colors.white;
     if(widget.outline){
       return _tapStatus ? _bgc.antiWhite(
         lightColor: Colors.white,
-        darkColor: OuiTheme.data()!.textTheme.button!.color,
+        darkColor: OuiTheme.bodyMedium!.color,
       ) : _bgc;
     }
     return _bgc.antiWhite(
         lightColor: Colors.white,
-        darkColor: OuiTheme.data()!.textTheme.button!.color
+        darkColor: OuiTheme.bodyMedium!.color
     );
   }
 }

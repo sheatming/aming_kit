@@ -27,16 +27,23 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
       padding: EdgeInsets.only(
         top: OuiSize.statusBarHeight() + OuiSize.toolBarHeight(),
       ),
-      child: Scaffold(
+      child: Theme(
+        data: ThemeData(
+          tabBarTheme: TabBarTheme(
+
+          )
+        ),
+        child: Scaffold(
           appBar: AppBar(
+            elevation: 0,
             automaticallyImplyLeading: false,
             centerTitle: true,
             backgroundColor: Theme.of(context).primaryColor,
             titleTextStyle: TextStyle(
-                color: Theme.of(context).primaryColor.antiWhite(
-                    lightColor: Colors.white,
-                    darkColor: Colors.black
-                ),
+              color: Theme.of(context).primaryColor.antiWhite(
+                  lightColor: Colors.white,
+                  darkColor: Colors.black
+              ),
             ),
             title: const Text("控制台"),
             // bottom: TabBar(
@@ -79,10 +86,15 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
           body: Column(
             children: [
               TabBar(
+
                 indicatorWeight: 8.px,
                 indicatorSize: TabBarIndicatorSize.tab,
                 isScrollable: true,
                 labelColor: Theme.of(context).primaryColor,
+                // labelColor: Theme.of(context).primaryColor.antiWhite(
+                //     lightColor: Colors.white,
+                //     darkColor: Colors.black
+                // ),
                 labelStyle: TextStyle(
                   fontSize: 28.px,
                   fontWeight: FontWeight.bold,
@@ -131,7 +143,8 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
                 ),
               ),
             ],
-          )
+          ),
+        ),
 
       ),
     );
@@ -155,20 +168,21 @@ class _APPInfoState extends State<_APPInfo> {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xfffafafa),
+        color: Color(0xfff5f5f5),
+        // color: Color(0xfffafafa),
       ),
       child: ListView(
         padding: const EdgeInsets.only(
-            top: 10
+            top: 1
         ),
         children: [
-          _infoItem("APP名称", OuiApp?.packageInfo?.appName),
-          _infoItem("包名", OuiApp?.packageInfo?.packageName),
-          _infoItem("版本号", OuiApp?.packageInfo?.version),
-          _infoItem("构建号", OuiApp?.packageInfo?.buildNumber),
-          _infoItem("文档路径", OuiApp?.getAppDocumentDir),
-          _infoItem("支持路径", OuiApp?.getAppSupportDir),
-          _infoItem("临时路径", OuiApp?.getTemporaryDir),
+          _infoItem("APP名称", OuiApp.packageInfo?.appName),
+          _infoItem("包名", OuiApp.packageInfo?.packageName),
+          _infoItem("版本号", OuiApp.packageInfo?.version),
+          _infoItem("构建号", OuiApp.packageInfo?.buildNumber),
+          _infoItem("文档路径", OuiApp.getAppDocumentDir),
+          _infoItem("支持路径", OuiApp.getAppSupportDir),
+          _infoItem("临时路径", OuiApp.getTemporaryDir),
         ],
       ),
     );
@@ -209,11 +223,12 @@ class _DeviceInfoState extends State<_DeviceInfo> {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xfffafafa),
+        // color: Color(0xfffafafa),
+        color: Color(0xfff5f5f5),
       ),
       child: ListView(
         padding: const EdgeInsets.only(
-          top: 10
+            top: 1
         ),
         children: [
           _infoItem("品牌", OuiDevice.brand),
@@ -252,7 +267,7 @@ class _ConsoleLogState extends State<_ConsoleLog> {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xfffafafa),
+        color: Color(0xfff5f5f5),
       ),
       child: RefreshIndicator(
         onRefresh: _onRefresh,//下拉刷新回调
@@ -302,14 +317,14 @@ class _ConsoleLogState extends State<_ConsoleLog> {
           ),
 
 
-
       ]),
-      child: Card(
-        elevation: 0,
+      child: Container(
+        color: Colors.white,
+        // elevation: 0,
         margin: const EdgeInsets.only(
-          top: 10,
-          left: 10,
-          right: 10,
+          top: 1,
+          // left: 10,
+          // right: 10,
         ),
         child: Padding(
           padding: const EdgeInsets.all(8),
@@ -320,7 +335,7 @@ class _ConsoleLogState extends State<_ConsoleLog> {
                   _statusText(item.cate),
                   const SizedBox(width: 8,),
                   Text(item.tag ?? "", style: const TextStyle(
-                      fontSize: 12,
+                    fontSize: 12,
                   )),
                   Expanded(child: Container()),
                   Text(item.date.toTime(), style: const TextStyle(
@@ -404,7 +419,7 @@ class _NetworkLogState extends State<_NetworkLog> {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xfffafafa),
+        color: Color(0xfff5f5f5),
       ),
       child: RefreshIndicator(
         onRefresh: _onRefresh,//下拉刷新回调
@@ -421,10 +436,10 @@ class _NetworkLogState extends State<_NetworkLog> {
   }
 
   Future<void> _onRefresh(){
-      setState(() {
-        _list = networkLog;
-      });
-      return Future.delayed(const Duration(seconds: 1),(){});
+    setState(() {
+      _list = networkLog;
+    });
+    return Future.delayed(const Duration(seconds: 1),(){});
   }
 
 
@@ -450,12 +465,12 @@ class _NetworkLogState extends State<_NetworkLog> {
         _detailText("响应时间", "${item.queryTime.toString()}ms"),
         _detailText("响应参数", "\r\n${_convert(item.data, 2)}"),
       ]),
-      child: Card(
-        elevation: 0,
+      child: Container(
+        color: Colors.white,
         margin: const EdgeInsets.only(
-          top: 10,
-          left: 10,
-          right: 10,
+          top: 1,
+          // left: 10,
+          // right: 10,
         ),
         child: Padding(
           padding: const EdgeInsets.all(8),
@@ -476,8 +491,8 @@ class _NetworkLogState extends State<_NetworkLog> {
 
                   Expanded(child: Container()),
                   Text(item.date.toTime(), style: const TextStyle(
-                    fontSize: 11,
-                    color: Colors.black38
+                      fontSize: 11,
+                      color: Colors.black38
                   )),
                 ],
               ),
@@ -514,8 +529,8 @@ class _NetworkLogState extends State<_NetworkLog> {
         borderRadius: BorderRadius.circular(3),
       ),
       padding: const EdgeInsets.symmetric(
-        vertical: 1.3,
-        horizontal: 3
+          vertical: 1.3,
+          horizontal: 3
       ),
       child: Text("$code", style: TextStyle(
         fontSize: 12,
@@ -547,11 +562,11 @@ class _PerformanceLogState extends State<_PerformanceLog> {
 
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xfffafafa),
+        color: Color(0xfff5f5f5),
       ),
       child: ListView(
         padding: const EdgeInsets.only(
-            top: 10
+            top: 1
         ),
         children: [
           ...OuiRunTimePoint.pointLog.keys.map((value) {
@@ -691,10 +706,10 @@ void openDetailDialog(BuildContext context, String title, {List<Widget>? childre
               horizontal: 20,
             ),
             padding: const EdgeInsets.only(
-                top: 8,
-                left: 16,
-                right: 16,
-                bottom: 16,
+              top: 8,
+              left: 16,
+              right: 16,
+              bottom: 16,
             ),
             decoration: BoxDecoration(
               color: const Color.fromRGBO(0, 0, 0, .9),
@@ -738,7 +753,7 @@ Widget _infoItem(title, content){
       color: Colors.white,
     ),
     margin: const EdgeInsets.only(
-        bottom: 5
+        bottom: 1
     ),
     child: ListTile(
       onLongPress: () async{
@@ -746,8 +761,8 @@ Widget _infoItem(title, content){
         OuiToast.toast(text: "已复制到剪切板");
       },
       dense: true,
-      title: Text(title),
-      subtitle: Text("${content ?? '-'}"),
+      title: Text(title, style: OuiTheme.bodySmall),
+      subtitle: Text("${content ?? '-'}", style: OuiTheme.bodyMedium),
     ),
   );
 }

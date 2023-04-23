@@ -7,7 +7,7 @@ import '../utils/common.dart';
 
 extension OtherString on String{
   String add(object){
-    return "${this}$object";
+    return "$this$object";
   }
 
   int get toInt{

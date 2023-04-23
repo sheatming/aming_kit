@@ -30,7 +30,7 @@ class OuiApp{
         Zone.current.handleUncaughtError(details.exception, details.stack as StackTrace);
         String message = '';
         assert(() {
-          String _stringify(Object exception) {
+          String stringify(Object exception) {
             try {
               return exception.toString();
             } catch (e) {
@@ -38,7 +38,7 @@ class OuiApp{
             }
             return 'Error';
           }
-          message = '${_stringify(details.exception)}\nSee also: https://flutter.dev/docs/testing/errors';
+          message = '${stringify(details.exception)}\nSee also: https://flutter.dev/docs/testing/errors';
           return true;
         }());
         final Object exception = details.exception;
@@ -76,6 +76,14 @@ class OuiApp{
   static Future initPackageInfo() async {
     packageInfo = await PackageInfo.fromPlatform();
     log.system("initialization", tag: "PackageInfo");
+  }
+
+  static Future setEnv(String env) async{
+    OuiCache.setString("oui_env", env);
+  }
+
+  static Future<String> getEnv() async{
+    return OuiCache.getString("oui_env", defValue: "");
   }
 }
 

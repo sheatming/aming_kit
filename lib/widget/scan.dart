@@ -3,6 +3,9 @@ import 'package:aming_kit/aming_kit.dart';
 import 'package:fast_barcode_scanner/fast_barcode_scanner.dart';
 import 'package:wakelock/wakelock.dart';
 
+
+
+
 class OuiScan extends StatefulWidget{
   const OuiScan({Key? key,
     required this.types,
@@ -60,7 +63,7 @@ class _OuiScan extends State<OuiScan>{
                 opacity: opacity,
                 curve: Curves.easeInOut,
                 child: Text(widget.hintText ?? "",
-                  style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                  style: OuiTheme.bodyMedium?.copyWith(
                       color: Colors.white
                   ),
                 ),

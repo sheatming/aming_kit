@@ -102,7 +102,7 @@ void openOverlay(String key, Widget child, {BuildContext? context}){
     return child;
   });
 
-  setTimeout(() => Overlay.of(tmpContext!)!.insert(entrys[key]!), time: 100);
+  setTimeout(() => Overlay.of(tmpContext!).insert(entrys[key]!), time: 100);
 }
 
 void closeOverlay(String key){

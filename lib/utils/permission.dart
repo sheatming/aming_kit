@@ -96,8 +96,8 @@ class OuiPermission{
     PermissionDecoration? decoration,
   }) async{
     if(isNotNull(permission)){
-      PermissionStatus _status = await permission!.status;
-      return _check(_status,
+      PermissionStatus status = await permission.status;
+      return _check(status,
         granted: () => onHandle(),
         denied: () => _request(
           permission: permission,
@@ -205,7 +205,7 @@ class OuiPermission{
                       height: 3.px,
                   ), textAlign: TextAlign.center,),
                   OuiButton(
-                    margin: EdgeInsets.only(
+                    margin: const EdgeInsets.only(
                         top: 15,
                         left: 15,
                         right: 15
@@ -226,14 +226,14 @@ class OuiPermission{
 
                   OuiButton(
                     show: decoration?.showCancelButton,
-                    margin: EdgeInsets.only(
+                    margin: const EdgeInsets.only(
                         top: 5,
                         left: 15,
                         right: 15
                     ),
                     radius: decoration?.buttonBorderRadius,
                     backgroundColor: decoration?.cancelButtonBackgroundColor ?? Colors.transparent,
-                    child: Text("暂不开启"),
+                    child: Text("暂不开启", style: OuiTheme.bodyMedium,),
                     onClick: () async{
                       goback();
                     },

@@ -148,6 +148,7 @@ class OuiApi {
     if(path.first == '/' && tmpOptions.baseUrl.last == '/') path = path.removeFirst;
     if(path.first != '/' && tmpOptions.baseUrl.last != '/') path = "/$path";
 
+    tmpOptions.connectTimeout = 30000;
     Dio dio = Dio(tmpOptions);
 
     int queryTime = DateTime.now().millisecondsSinceEpoch;
@@ -365,7 +366,7 @@ void _pushLog({
   String tmpLog = "🔗 ${requestOptions.method}: "
       "${requestOptions.baseUrl}${requestOptions.path}#br#";
   if(isNotNull(result)) tmpLog += "[$status] - ${result?.statusMessage ?? "-"}#br#";
-  if(isNotNull(error)) tmpLog += "${error?.error ?? "-"}#br#";
+  if(isNotNull(error)) tmpLog += "[$status] - ${error?.error ?? "-"}#br#";
 
   tmpLog += "⌚️ ${DateTime.now().millisecondsSinceEpoch - queryTime}ms#br#";
   tmpLog += "📦 ${requestOptions.data ?? "-"}#br#";

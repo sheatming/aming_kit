@@ -1,5 +1,5 @@
 import 'package:aming_kit/aming_kit.dart';
-import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter/foundation.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
@@ -8,6 +8,9 @@ class OuiMaterialApp extends StatefulWidget {
     this.routes,
     this.home,
     this.debugShowCheckedModeBanner,
+    this.showCheckedModeBanner = false,
+    this.bannerMessage,
+    this.bannerColor,
     this.supportedLocales = const <Locale>[Locale('en', 'US')],
     this.localizationsDelegates,
     this.theme,
@@ -22,6 +25,9 @@ class OuiMaterialApp extends StatefulWidget {
   final Map<String, Widget>? routes;
   final Widget? home;
   final bool? debugShowCheckedModeBanner;
+  final bool showCheckedModeBanner;
+  final String? bannerMessage;
+  final Color? bannerColor;
   final Iterable<Locale> supportedLocales;
   final Iterable<LocalizationsDelegate<dynamic>>? localizationsDelegates;
   final ThemeData? theme;
@@ -31,7 +37,6 @@ class OuiMaterialApp extends StatefulWidget {
   final Future<void>? onInit;
   final double designScreenWidth;
   final EasyLoading? easyLoading;
-
 
   static void restartApp({BuildContext? context}) {
     BuildContext tmpContext = context ?? OuiGlobal.globalContext!;
@@ -92,8 +97,14 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
   }
 
   @override
+  void activate() {
+    super.activate();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if(isNotNull(widget.easyLoading)) widget.easyLoading!;
+    // if(isNotNull(widget.easyLoading)) widget.easyLoading!;
+
     return KeyedSubtree(
       key: appKey,
       child: MaterialApp(
@@ -105,7 +116,7 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
           if(isNotNull(widget.navigatorObservers))
             ...widget.navigatorObservers!.map((e) => e).toList(),
         ],
-        debugShowCheckedModeBanner: widget.debugShowCheckedModeBanner ?? false,
+        debugShowCheckedModeBanner: (widget.debugShowCheckedModeBanner == true && widget.showCheckedModeBanner == false) ?? false,
         onGenerateRoute: OuiRoute.generator,
         home: widget.home,
         supportedLocales: widget.supportedLocales,
@@ -118,9 +129,23 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
         //   return EasyLoading.init(builder: widget.builder);
         // },
         builder: EasyLoading.init(
-          builder: (context, child) => botToastBuilder(context, child),
+          builder: (context, child) {
+            Widget _child = botToastBuilder(context, child);
+            if(widget.showCheckedModeBanner == true){
+              return Banner(
+                message: widget.bannerMessage??"debug",
+                location: BannerLocation.topEnd,
+                child: _child,
+                color: widget.bannerColor ?? Color(0xA0B71C1C),
+              );
+            } else {
+              return _child;
+            }
+
+          },
         ),
       ),
+      // child:
     );
   }
 }
