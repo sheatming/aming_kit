@@ -11,26 +11,27 @@
 /// hour -> HH/H      minute -> mm/m   second -> ss/s
 class DateFormats {
   static String full = 'yyyy-MM-dd HH:mm:ss';
-  static String y_mo_d_h_m = 'yyyy-MM-dd HH:mm';
-  static String y_mo_d = 'yyyy-MM-dd';
-  static String y_mo = 'yyyy-MM';
-  static String mo_d = 'MM-dd';
-  static String mo_d_h_m = 'MM-dd HH:mm';
-  static String h_m_s = 'HH:mm:ss';
-  static String h_m = 'HH:mm';
+  // static String yMoDhm = 'yyyy-MM-dd HH:mm';
+  // static String y_mo_d_h_m = 'yyyy-MM-dd HH:mm';
+  // static String y_mo_d = 'yyyy-MM-dd';
+  // static String y_mo = 'yyyy-MM';
+  // static String mo_d = 'MM-dd';
+  // static String mo_d_h_m = 'MM-dd HH:mm';
+  // static String h_m_s = 'HH:mm:ss';
+  // static String h_m = 'HH:mm';
 
-  static String zh_full = 'yyyy年MM月dd日 HH时mm分ss秒';
-  static String zh_y_mo_d_h_m = 'yyyy年MM月dd日 HH时mm分';
-  static String zh_y_mo_d = 'yyyy年MM月dd日';
-  static String zh_y_mo = 'yyyy年MM月';
-  static String zh_mo_d = 'MM月dd日';
-  static String zh_mo_d_h_m = 'MM月dd日 HH时mm分';
-  static String zh_h_m_s = 'HH时mm分ss秒';
-  static String zh_h_m = 'HH时mm分';
+  // static String zhFull = 'yyyy年MM月dd日 HH时mm分ss秒';
+  // static String zh_y_mo_d_h_m = 'yyyy年MM月dd日 HH时mm分';
+  // static String zh_y_mo_d = 'yyyy年MM月dd日';
+  // static String zh_y_mo = 'yyyy年MM月';
+  // static String zh_mo_d = 'MM月dd日';
+  // static String zh_mo_d_h_m = 'MM月dd日 HH时mm分';
+  // static String zh_h_m_s = 'HH时mm分ss秒';
+  // static String zh_h_m = 'HH时mm分';
 }
 
 /// month->days.
-Map<int, int> MONTH_DAY = {
+Map<int, int> monthDay = {
   1: 31,
   2: 28,
   3: 31,
@@ -188,7 +189,7 @@ class DateUtil {
     int month = dateTime.month;
     int days = dateTime.day;
     for (int i = 1; i < month; i++) {
-      days = days + MONTH_DAY[i]!;
+      days = days + monthDay[i]!;
     }
     if (isLeapYearByYear(year) && month > 2) {
       days = days + 1;
@@ -245,21 +246,17 @@ class DateUtil {
     if (ms == null || ms <= 0) {
       return false;
     }
-    DateTime _old = DateTime.fromMillisecondsSinceEpoch(ms, isUtc: isUtc);
-    DateTime _now;
+    DateTime tmpOld = DateTime.fromMillisecondsSinceEpoch(ms, isUtc: isUtc);
+    DateTime tmpNow;
     if (locMs != null) {
-      _now = DateUtil.getDateTimeByMs(locMs, isUtc: isUtc);
+      tmpNow = DateUtil.getDateTimeByMs(locMs, isUtc: isUtc);
     } else {
-      _now = isUtc ? DateTime.now().toUtc() : DateTime.now().toLocal();
+      tmpNow = isUtc ? DateTime.now().toUtc() : DateTime.now().toLocal();
     }
 
-    DateTime old =
-    _now.millisecondsSinceEpoch > _old.millisecondsSinceEpoch ? _old : _now;
-    DateTime now =
-    _now.millisecondsSinceEpoch > _old.millisecondsSinceEpoch ? _now : _old;
-    return (now.weekday >= old.weekday) &&
-        (now.millisecondsSinceEpoch - old.millisecondsSinceEpoch <=
-            7 * 24 * 60 * 60 * 1000);
+    DateTime old = tmpNow.millisecondsSinceEpoch > tmpOld.millisecondsSinceEpoch ? tmpOld : tmpNow;
+    DateTime now = tmpNow.millisecondsSinceEpoch > tmpOld.millisecondsSinceEpoch ? tmpNow : tmpOld;
+    return (now.weekday >= old.weekday) && (now.millisecondsSinceEpoch - old.millisecondsSinceEpoch <= 7 * 24 * 60 * 60 * 1000);
   }
 
   /// year is equal.

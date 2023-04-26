@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:aming_kit/aming_kit.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'console.dart';
 
@@ -61,6 +60,8 @@ class OuiDevTools extends StatefulWidget {
   final OuiDevOption? option8;
   final OuiDevOption? option9;
 
+
+
   static void open({
     BuildContext? context,
     OuiDevOption? option1,
@@ -77,7 +78,7 @@ class OuiDevTools extends StatefulWidget {
     OuiCache.setBool("runDebug", true);
     openOverlay("devTools", OuiDevTools(
       option1: option1 ?? OuiDevOption(Icons.construction_outlined, "控制台", onClick: isNotNull(OuiGlobal.globalContext) ? () => showModalBottomSheet(
-
+        isScrollControlled: true,
         backgroundColor: Colors.transparent,
         context: OuiGlobal.globalContext!,
         builder: (BuildContext context){
@@ -88,11 +89,21 @@ class OuiDevTools extends StatefulWidget {
       option3: option3 ?? OuiDevOption(Icons.warning, ""),
       option4: option4 ?? OuiDevOption(Icons.warning, ""),
       option5: option5 ?? OuiDevOption(Icons.warning, ""),
-      option6: option6 ?? OuiDevOption(Icons.warning, ""),
+      option6: option6 ?? OuiDevOption(Icons.rotate_left, isNotNull(OuiGlobal.globalContext) ? "重启应用" : "退出应用", onClick: (){
+        if(isNotNull(OuiGlobal.globalContext) && OuiGlobal.initMaterialApp){
+          OuiMaterialApp.restartApp();
+        } else {
+          exit(0);
+        }
+      }),
       option7: option7 ?? OuiDevOption(Icons.cleaning_services, "清空缓存", onClick: (){
         OuiCache.clear();
         OuiCache.setBool("runDebug", true);
-        exit(0);
+        if(isNotNull(OuiGlobal.globalContext) && OuiGlobal.initMaterialApp){
+          OuiMaterialApp.restartApp();
+        } else {
+          exit(0);
+        }
       }),
       option8: option8 ?? OuiDevOption(Icons.cached, "重启工具", onClick: (){
         open(
@@ -119,7 +130,7 @@ class OuiDevTools extends StatefulWidget {
   }
 
   @override
-  _OuiDevTools createState() => _OuiDevTools();
+  State createState() => _OuiDevTools();
 }
 
 class _OuiDevTools extends State<OuiDevTools> {
@@ -149,17 +160,14 @@ class _OuiDevTools extends State<OuiDevTools> {
         if(isNotNull(widget.option8)) options.add(widget.option8!);
         if(isNotNull(widget.option9)) options.add(widget.option9!);
 
-        double _x = OuiCache.getDouble(_configDX, defValue: 0.0);
-        double _y = OuiCache.getDouble(_configDY, defValue: kToolbarHeight + 100);
+        double x = OuiCache.getDouble(_configDX, defValue: 0.0);
+        double y = OuiCache.getDouble(_configDY, defValue: kToolbarHeight + 100);
         // if(_x != 0 && (_x > OuiSize.screenW() || _x < OuiSize.screenW())){
         //     log.info(_x);
         //     _x = OuiSize.screenW();
         //     log.info(_x);
         // }
-        offset = Offset(
-          _x,
-          _y,
-        );
+        offset = Offset(x, y);
       });
     }
   }
@@ -191,8 +199,12 @@ class _OuiDevTools extends State<OuiDevTools> {
       data: Theme.of(context).copyWith(
         highlightColor: Colors.transparent,
         appBarTheme: AppBarTheme.of(context).copyWith(
-          brightness: Brightness.dark,
+          // brightness: Brightness.dark,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarBrightness: Brightness.dark,
+          )
         ),
+
       ),
       child: AnimatedPositioned(
         left: isOpen == true ? (OuiSize.screenWidth() / 2 - 125) : offset?.dx,
@@ -211,16 +223,16 @@ class _OuiDevTools extends State<OuiDevTools> {
           onPanEnd: (detail) {
             double screenWidget = OuiSize.screenWidth() - _size;
             double screen50Widget = screenWidget / 2;
-            Offset? _offset = offset;
-            Offset? _offset2 = offset;
+            Offset? offset1 = offset;
+            Offset? offset2 = offset;
             if(offset!.dx > screen50Widget){
-              _offset2 = Offset(screenWidget, 0);
+              offset2 = Offset(screenWidget, 0);
             } else {
-              _offset = Offset(0, offset!.dy);
-              _offset2 = const Offset(0, 0);
+              offset1 = Offset(0, offset!.dy);
+              offset2 = const Offset(0, 0);
             }
             setState(() {
-              offset = _calOffset(MediaQuery.of(context).size, _offset!, _offset2!);
+              offset = _calOffset(MediaQuery.of(context).size, offset1!, offset2!);
               OuiCache.setDouble(_configDX, offset!.dx);
               OuiCache.setDouble(_configDY, offset!.dy);
             });
@@ -230,17 +242,17 @@ class _OuiDevTools extends State<OuiDevTools> {
                   _opacity = 0;
                 });
               }
-            }, 1500);
+            }, time: 1500);
           },
 
           child: AnimatedCrossFade(
-            duration: const Duration(milliseconds: 200),
-            // firstCurve: Curves.easeInCirc,
-            // secondCurve: Curves.easeInToLinear,
+            duration: const Duration(milliseconds: 100),
+            firstCurve: Curves.easeInSine,
+            secondCurve: Curves.easeInSine,
             // sizeCurve: Curves.bounceOut,
             crossFadeState: !isOpen ? CrossFadeState.showFirst : CrossFadeState.showSecond,
             secondChild: Material(
-              color: Theme.of(context).textTheme.headline6!.color!.withOpacity(0.5 + _opacity),
+              color: Colors.black.withOpacity(0.5 + _opacity),
               borderRadius: BorderRadius.circular(10),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
@@ -266,7 +278,7 @@ class _OuiDevTools extends State<OuiDevTools> {
               height: _size,
               width: _size,
               decoration: BoxDecoration(
-                color: Theme.of(context).textTheme.headline6!.color!.withOpacity(0.2 + _opacity),
+                // color: Theme.of(context).textTheme.headline6!.color!.withOpacity(0.2 + _opacity),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(
@@ -275,7 +287,8 @@ class _OuiDevTools extends State<OuiDevTools> {
                   height: _size - 15,
                   width: _size - 15,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.5 + _opacity),
+                    // color: Colors.white.withOpacity(0.5 + _opacity),
+                    color: Colors.black.withOpacity(0.2 + _opacity),
                     borderRadius: BorderRadius.circular(90),
                   ),
                   child: Center(
@@ -305,39 +318,36 @@ class _OuiDevTools extends State<OuiDevTools> {
     );
   }
 
-  var x;
   void _open(){
     if(!isOpen){
       setState(() {
         isOpen = true;
         _opacity = 0.3;
-        x = setTimeout((){
+        setTimeout((){
           setState(() {
             isOpen = false;
             _opacity = 0;
           });
-        }, 5000);
+        }, time: 5000, key: "debugToolX");
       });
     }
   }
 
   Widget _btn(OuiDevOption option){
-    GestureTapCallback? _onClick = option.onClick;
-    String? _text = option.text;
-    IconData? _icon = option.icon;
-    
-    
+    GestureTapCallback? onClick = option.onClick;
+    String? text = option.text;
+    IconData? icon = option.icon;
 
     return Visibility(
       visible: isOpen,
       child: GestureDetector(
         onTap: (){
           setState(() {
-            if(isNotNull(x)) x?.cancel();
+            clearTimeout("debugToolX");
             isOpen = false;
             _opacity = 0;
           });
-          if(isNotNull(_onClick)) _onClick!();
+          if(isNotNull(onClick)) onClick!();
         },
 
         child: Container(
@@ -347,17 +357,17 @@ class _OuiDevTools extends State<OuiDevTools> {
           decoration: const BoxDecoration(
           ),
           child: Center(
-            child: isNotNull(_onClick) ? Column(
+            child: isNotNull(onClick) ? Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
                   height: 40,
                   width: 40,
                   child: Center(
-                    child: Icon(_icon, color: Colors.white),
+                    child: Icon(icon, color: Colors.white),
                   ),
                 ),
-                Text(_text ?? "",
+                Text(text ?? "",
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
@@ -372,3 +382,59 @@ class _OuiDevTools extends State<OuiDevTools> {
   }
 }
 
+
+autoOpenDevTool({
+  BuildContext? context,
+  OuiDevOption? option1,
+  OuiDevOption? option2,
+  OuiDevOption? option3,
+  OuiDevOption? option4,
+  OuiDevOption? option5,
+  OuiDevOption? option6,
+  OuiDevOption? option7,
+  OuiDevOption? option8,
+  OuiDevOption? option9,
+}){
+  if(OuiCache.getBool("runDebug", defValue: false)){
+    OuiDevTools.open(
+        option1: option1,
+        option2: option2,
+        option3: option3,
+        option4: option4,
+        option5: option5,
+        option6: option6,
+        option7: option7,
+        option8: option8,
+        option9: option9
+    );
+  }
+}
+
+class OuiRunTimePoint{
+
+  static Map<String, Map<String, dynamic>> pointLog = {};
+
+  static void startPoint(String name, String title) async{
+    pointLog.remove(name);
+    pointLog.addAll({name: {"sp": DateTime.now().millisecondsSinceEpoch, "ep": 0, "title": title}});
+  }
+
+  static void endPoint(String name) async{
+    if(pointLog.containsKey(name)){
+      Map<String, dynamic>? tmp = pointLog[name];
+      tmp!['ep'] = DateTime.now().millisecondsSinceEpoch;
+      pointLog[name] = tmp;
+    }
+  }
+
+  static int getMS(String name) {
+    if(pointLog.containsKey(name)){
+      Map<String, dynamic>? tmp = pointLog[name];
+      if(tmp!['ep']! == 0) return -2;
+      if(tmp['sp']! == 0) return -1;
+      return tmp['ep']! - tmp['sp']!;
+    } else {
+      return -2;
+    }
+  }
+}

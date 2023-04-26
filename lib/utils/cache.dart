@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:aming_kit/aming_kit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'common.dart';
 
 enum CacheType {
   string,
@@ -30,8 +29,9 @@ class OuiCache{
     if(!isNotNull(_prefs)){
       _prefs = await SharedPreferences.getInstance();
     }
-    if(!isNotNull(value)){
-      return remove(key);
+    remove(key);
+    if(value == null){
+      return false;
     }
     switch(type){
       case CacheType.bool:

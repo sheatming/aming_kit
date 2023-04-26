@@ -1,12 +1,13 @@
 
 import 'package:aming_kit/aming_kit.dart';
-import 'package:flutter/material.dart';
 
 
 /// 检查是否为空
 bool isNotNull(object){
   if(object == null) return false;
   if(object == "null") return false;
+  if(object == "false") return false;
+  if(object == false) return false;
   if(object == "") return false;
   if(object == {}) return false;
   if(object.toString() == "{}") return false;
@@ -16,10 +17,10 @@ bool isNotNull(object){
   return true;
 }
 
-Map <int, TimerUtil?> _timeUtil = {};
+Map <String, TimerUtil?> _timeUtil = {};
 
-TimerUtil? setTimeout(Function f, [int time = 1000]){
-  int index = f.hashCode;
+TimerUtil? setTimeout(Function f, {int time = 1000, String? key}){
+  String index = key ?? f.hashCode.toString();
   if(isNotNull(_timeUtil[index])){
     _timeUtil[index]?.cancel();
     _timeUtil[index] = null;
@@ -43,12 +44,18 @@ TimerUtil? setTimeout(Function f, [int time = 1000]){
   return _timeUtil[index];
 }
 
+clearTimeout(String key){
+  _timeUtil[key]?.cancel();
+  _timeUtil.remove(key);
+}
+
 TimerUtil? setCountDown({
   Function? onDone,
   Function? onProgress,
-  int time = 60
+  int time = 60,
+  String? key,
 }){
-  int index = time;
+  String index = key ?? time.toString();
   if(isNotNull(_timeUtil[index])){
     _timeUtil[index]?.cancel();
     _timeUtil[index] = null;
@@ -84,12 +91,8 @@ Map<String, OverlayEntry?> entrys = {};
 
 void openOverlay(String key, Widget child, {BuildContext? context}){
 
-  BuildContext? _context = context ?? OuiGlobal.globalContext;
-  // if(!isNotNull(child)) return;
-  if(!isNotNull(_context)){
-    log.error("context无效");
-    return;
-  }
+  BuildContext? tmpContext = context ?? OuiGlobal.globalContext;
+  if(!isNotNull(tmpContext)) throw contextError;
 
   if(isNotNull(entrys[key])){
     entrys[key]?.remove();
@@ -99,7 +102,7 @@ void openOverlay(String key, Widget child, {BuildContext? context}){
     return child;
   });
 
-  setTimeout(() => Overlay.of(_context!)!.insert(entrys[key]!), 100);
+  setTimeout(() => Overlay.of(tmpContext!).insert(entrys[key]!), time: 100);
 }
 
 void closeOverlay(String key){

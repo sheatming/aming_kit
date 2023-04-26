@@ -1,5 +1,4 @@
 import 'package:aming_kit/aming_kit.dart';
-import 'package:flutter/material.dart';
 import 'dart:ui';
 
 
@@ -13,19 +12,26 @@ extension SizeNumber on num{
 
 class OuiSize {
   // static MediaQueryData mediaQuery;
+  static bool initialization = false;
   static late MediaQueryData mediaQuery;
-  static final double _width = mediaQuery.size.width;
-  static final double _height = mediaQuery.size.height;
-  static final double _topbarHeight = mediaQuery.padding.top;
-  static final double _botbarHeight = mediaQuery.padding.bottom;
-  static final double _pixelRatio = mediaQuery.devicePixelRatio;
+  static double get _width => mediaQuery.size.width;
+  static double get _height => mediaQuery.size.height;
+  static double get _topbarHeight => mediaQuery.padding.top;
+  static double get _botbarHeight => mediaQuery.padding.bottom;
+  static double get _pixelRatio => mediaQuery.devicePixelRatio;
   static double _ratio = 0;
   static double get ratio => _ratio;
-  static init([double number = 750]){
+  static init({double number = 750, bool isForce = false}){
+    if(!isForce){
+      if(initialization){
+        return;
+      }
+    }
     mediaQuery = MediaQueryData.fromWindow(window);
     double uiWidth = number;
     _ratio = _width / uiWidth;
-    log.system("initialization", tag: "Size");
+    if(!initialization) log.system("initialization design size: $uiWidth screenWidth: $_width screenHeight: $_height", tag: "Size");
+    initialization = true;
   }
 
   static Size size(){
@@ -33,7 +39,7 @@ class OuiSize {
   }
 
   static px(number){
-    if(!(_ratio is double || _ratio is double)) init(750);
+    if(!isNotNull(_ratio) || _ratio == 0) init(number: 750);
     return number * _ratio;
   }
 

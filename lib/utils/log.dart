@@ -20,79 +20,97 @@ class OuiLog {
     _oDebugMode = value;
   }
 
-  void info(Object? object, {String? tag, String? type}) => _print(object,
-      tag: tag,
-      cate: LogCate.info,
-      type: type
+  void info(object, {String? tag, String? type, StackTrace? stackTrace, bool? showTraceList}) => _print(object,
+    tag: tag,
+    cate: LogCate.info,
+    type: type,
+    stackTrace: stackTrace,
+    showTraceList: showTraceList,
   );
-  void error(Object object, {String? tag, String? type}) => _print(object,
-      tag: tag,
-      cate: LogCate.error,
-      type: type
+  void error(object, {String? tag, String? type, StackTrace? stackTrace, bool? showTraceList}) => _print(object,
+    tag: tag,
+    cate: LogCate.error,
+    type: type,
+    stackTrace: stackTrace,
+    showTraceList: showTraceList,
   );
-  void warn(Object object, {String? tag, String? type}) => _print(object,
-      tag: tag,
-      cate: LogCate.warn,
-      type: type
+  void warn(object, {String? tag, String? type, StackTrace? stackTrace, bool? showTraceList}) => _print(object,
+    tag: tag,
+    cate: LogCate.warn,
+    type: type,
+    stackTrace: stackTrace,
+    showTraceList: showTraceList,
   );
-  void debug(Object? object, {String? tag, String? type}) => _print(object,
-      tag: tag,
-      cate: LogCate.debug,
-      type: type
+  void debug(object, {String? tag, String? type, StackTrace? stackTrace, bool? showTraceList}) => _print(object,
+    tag: tag,
+    cate: LogCate.debug,
+    type: type,
+    stackTrace: stackTrace,
+    showTraceList: showTraceList,
   );
-  void http(Object? object, {String? tag, String? type}) => _print(object,
+  void http(object, {String? tag, String? type, StackTrace? stackTrace, bool? showTraceList}) => _print(object,
     tag: tag,
     cate: LogCate.http,
     type: type,
+    stackTrace: stackTrace,
+    showTraceList: showTraceList,
   );
-  void system(Object? object, {String? tag, String? type}) => _print(object,
+  void system(object, {String? tag, String? type, StackTrace? stackTrace, bool? showTraceList}) => _print(object,
     tag: tag,
     cate: LogCate.system,
     type: type,
+    stackTrace: stackTrace,
+    showTraceList: showTraceList,
   );
 
-  static _print(Object? object, {String? tag, required LogCate cate, String? type}){
+  static _print(Object? object, {String? tag, required LogCate cate, String? type, StackTrace? stackTrace, bool? showTraceList}){
     // if(!isNotNull(_list["All"])){
     //     _list.addAll({"All": []});
     // }
-    var _tag = "";
+    var tmpTag = "";
 
     switch(cate){
       case LogCate.info:
-        _tag = ".*INFO.* ";
+        tmpTag = ".*INFO.* ";
         break;
       case LogCate.error:
-        _tag = ".*ERROR.* ";
+        tmpTag = ".*ERROR.* ";
         break;
       case LogCate.warn:
-        _tag = ".*WARN.* ";
+        tmpTag = ".*WARN.* ";
         break;
       case LogCate.debug:
-        _tag = ".*DEBUG.* ";
+        tmpTag = ".*DEBUG.* ";
         break;
       case LogCate.http:
-        _tag = ".*HTTP.* ";
+        tmpTag = ".*HTTP.* ";
         break;
       case LogCate.system:
-        _tag = ".*SYSTEM.* ";
+        tmpTag = ".*SYSTEM.* ";
         break;
       default:
         break;
     }
 
-    List<String> _st = formatStackTrace(StackTrace.current)!;
+    List<String> tmpSt = formatStackTrace(stackTrace ?? StackTrace.current)!;
     // var _stc = _st.last.replaceAll("#${methodCount-1}   ", " ");
-    var _stc = _st.first.replaceAll("#0   ", " ");
+    var tmpStc = tmpSt.first.replaceAll("#0   ", " ");
     if(kDebugMode){
-      print("$_tag=======================================================================");
-      print("$_tag${isNotNull(tag) ? "$tag >>> " : ""}${_stc.removeFirst()} ⬇️");
+      debugPrint("$tmpTag=======================================================================");
+      debugPrint("$tmpTag${isNotNull(tag) ? "$tag >>> " : ""}${tmpStc.removeFirst} ⬇️");
 
+      object = object.toString().replaceAll("\n", "#br#");
       List objArr = object.toString().split("#br#");
       for (var element in objArr) {
-        print("$_tag${element.toString()}");
+        debugPrint("$tmpTag${element.toString()}");
       }
-      print("$_tag=======================================================================");
-      print("");
+      if(showTraceList == true){
+        for (var element in tmpSt) {
+          debugPrint("$tmpTag${element.toString()}");
+        }
+      }
+      debugPrint("$tmpTag=======================================================================");
+      debugPrint("");
     }
 
     if((_oDebugMode && cate != LogCate.http) || cate == LogCate.system){
@@ -100,7 +118,8 @@ class OuiLog {
         tag: tag,
         content: object.toString().replaceAll("#br#", "\r\n"),
         cate: cate,
-        path: _stc.removeFirst(),
+        path: tmpStc.removeFirst,
+        stackTrace: StackTrace.current,
       ));
     }
   }
@@ -114,7 +133,8 @@ class ConsoleLogItem{
   final String content;
   final String path;
   final LogCate cate;
-  ConsoleLogItem({this.tag, required this.content, required this.cate, required this.path});
+  final StackTrace? stackTrace;
+  ConsoleLogItem({this.tag, required this.content, required this.cate, required this.path, this.stackTrace});
 }
 
 
@@ -158,9 +178,9 @@ class NetworkLogItem{
   final String url;
   final String method;
   final dynamic header;
-  final dynamic? queryHeader;
-  final dynamic? params;
-  final dynamic? data;
+  final dynamic queryHeader;
+  final dynamic params;
+  final dynamic data;
   final int queryTime;
   NetworkLogItem({required this.statusCode, required this.statusMessage, required this.url, this.params = "-", this.data = "-", required this.method, this.queryTime = 0, this.header, this.queryHeader = "-"});
 }

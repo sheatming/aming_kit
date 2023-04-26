@@ -10,6 +10,14 @@ extension ExtNum on num {
     dayFormat: dayFormat,
     format: format,
   );
+
+  String toMoney([int fractionDigits = 2]){
+    return isNotNull(this) ? (this / 100).toStringAsFixed(fractionDigits) : 0.toStringAsFixed(fractionDigits);
+  }
+
+  bool get isNull{
+    return !isNotNull(this);
+  }
 }
 
 extension ExtInt on int {
@@ -21,6 +29,15 @@ extension ExtInt on int {
     return t;
   }
 
+  DateTime? get toDateTimeFromMilliseconds{
+    if(!isNotNull(this)) return null;
+    return DateTime.fromMillisecondsSinceEpoch(this);
+  }
+
+  DateTime? get toDateTimeFromSeconds{
+    if(!isNotNull(this)) return null;
+    return DateTime.fromMillisecondsSinceEpoch(this * 1000);
+  }
 }
 
 
@@ -38,7 +55,7 @@ String _toTime(value, {String defValue = "-", bool isTimeLine = false, DayFormat
   }
 
   if(isTimeLine){
-    return TimelineUtil.format(oldInt, locale: "zh", dayFormat: isNotNull(dayFormat) ? dayFormat : DayFormat.Full);
+    return TimelineUtil.format(oldInt, locale: "zh", dayFormat: isNotNull(dayFormat) ? dayFormat : DayFormat.full);
   } else {
     return DateUtil.formatDateMs(oldInt, format: format);
   }
