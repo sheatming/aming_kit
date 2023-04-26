@@ -8,7 +8,7 @@ class OuiMaterialApp extends StatefulWidget {
     this.routes,
     this.home,
     this.debugShowCheckedModeBanner,
-    this.showCheckedModeBanner = false,
+    this.showModeBanner = false,
     this.bannerMessage,
     this.bannerColor,
     this.supportedLocales = const <Locale>[Locale('en', 'US')],
@@ -25,7 +25,7 @@ class OuiMaterialApp extends StatefulWidget {
   final Map<String, Widget>? routes;
   final Widget? home;
   final bool? debugShowCheckedModeBanner;
-  final bool showCheckedModeBanner;
+  final bool showModeBanner;
   final String? bannerMessage;
   final Color? bannerColor;
   final Iterable<Locale> supportedLocales;
@@ -51,6 +51,7 @@ class OuiMaterialApp extends StatefulWidget {
 class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver {
 
   Key appKey = UniqueKey();
+  Key bannerKey = UniqueKey();
   final botToastBuilder = BotToastInit();
   @override
   void initState() {
@@ -78,6 +79,11 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
     OuiApp.initAppDir();
     OuiApp.initPackageInfo();
     if(isNotNull(widget.onInit)) await widget.onInit!;
+
+    Future.delayed(Duration(seconds: 1), (){
+      print(widget.bannerMessage);
+      if(mounted) setState(() {});
+    });
   }
 
 
@@ -92,6 +98,7 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
   void restartApp() {
     setState(() {
       appKey = UniqueKey();
+      bannerKey = UniqueKey();
     });
     initApp();
   }
@@ -116,7 +123,7 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
           if(isNotNull(widget.navigatorObservers))
             ...widget.navigatorObservers!.map((e) => e).toList(),
         ],
-        debugShowCheckedModeBanner: (widget.debugShowCheckedModeBanner == true && widget.showCheckedModeBanner == false) ?? false,
+        debugShowCheckedModeBanner: (widget.debugShowCheckedModeBanner == true && widget.showModeBanner == false) ?? false,
         onGenerateRoute: OuiRoute.generator,
         home: widget.home,
         supportedLocales: widget.supportedLocales,
@@ -131,8 +138,9 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
         builder: EasyLoading.init(
           builder: (context, child) {
             Widget _child = botToastBuilder(context, child);
-            if(widget.showCheckedModeBanner == true){
+            if(widget.showModeBanner == true){
               return Banner(
+                key: bannerKey,
                 message: widget.bannerMessage??"debug",
                 location: BannerLocation.topEnd,
                 child: _child,

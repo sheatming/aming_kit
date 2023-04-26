@@ -103,7 +103,7 @@ getParams(String field, object, {defValue, bool isArgs = false}){
     });
     return tmpParams;
   }
-  if(isNotNull(OuiRoute.params[route]) && isNotNull(OuiRoute.params[route]![field])){
+  if(OuiRoute.params?.containsKey(route) == true && OuiRoute.params[route]?.containsKey(field) == true){
     var tmpParam = OuiRoute.params[route]![field]?.first;
     return tmpParam;
   }

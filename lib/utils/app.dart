@@ -82,7 +82,7 @@ class OuiApp{
     OuiCache.setString("oui_env", env);
   }
 
-  static Future<String> getEnv() async{
+  static String getEnv() {
     return OuiCache.getString("oui_env", defValue: "");
   }
 }
