@@ -62,7 +62,7 @@ class OuiToast {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        indicator ?? Container(
+                        Container(
                           // constraints: BoxConstraints(
                           //   minWidth: 60,
                           //   minHeight: 60,
@@ -80,7 +80,7 @@ class OuiToast {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const SpinKitCircle(
+                              indicator ?? const SpinKitCircle(
                                 size: 40,
                                 color: Colors.white,
                               ),
