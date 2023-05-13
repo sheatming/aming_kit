@@ -30,7 +30,6 @@ class OuiToast {
     bool animation = true,
   }) async {
     BotToast.cleanAll();
-    EasyLoading.dismiss(animation: animation);
   }
 
   static Future<void> loading({

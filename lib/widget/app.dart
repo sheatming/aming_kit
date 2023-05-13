@@ -19,7 +19,6 @@ class OuiMaterialApp extends StatefulWidget {
     this.navigatorObservers,
     this.onInit,
     this.designScreenWidth = 750.0,
-    this.easyLoading,
   }) : super(key: key);
 
   final Map<String, Widget>? routes;
@@ -36,7 +35,6 @@ class OuiMaterialApp extends StatefulWidget {
   final List<NavigatorObserver>? navigatorObservers;
   final Future<void>? onInit;
   final double designScreenWidth;
-  final EasyLoading? easyLoading;
 
   static void restartApp({BuildContext? context}) {
     BuildContext tmpContext = context ?? OuiGlobal.globalContext!;
@@ -135,8 +133,7 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
         // builder: (context, child) {
         //   return EasyLoading.init(builder: widget.builder);
         // },
-        builder: EasyLoading.init(
-          builder: (context, child) {
+        builder: (context, child) {
             Widget _child = botToastBuilder(context, child);
             if(widget.showModeBanner == true){
               return Banner(
@@ -152,7 +149,6 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
 
           },
         ),
-      ),
       // child:
     );
   }
