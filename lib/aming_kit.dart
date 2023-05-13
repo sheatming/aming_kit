@@ -34,7 +34,6 @@ export './widget/safe_touch_bar.dart';
 export './widget/scan.dart';
 
 export 'package:flutter/material.dart';
-export 'package:flutter_easyloading/flutter_easyloading.dart';
 export 'package:bot_toast/bot_toast.dart';
 
 
