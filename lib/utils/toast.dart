@@ -117,6 +117,7 @@ Future<void> toast(text, {
   TextStyle? style,
   WrapAnimation? wrapAnimation,
 }) async => OuiToast.toast(
+  duration: duration ?? Duration(seconds: 2),
   text: text,
   wrapAnimation: wrapAnimation,
     contentPadding: contentPadding,
