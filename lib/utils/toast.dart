@@ -19,7 +19,7 @@ class OuiToast {
         wrapAnimation: wrapAnimation,
         onlyOne: true,
         contentPadding: contentPadding ?? const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 7),
-        contentColor: contentColor ?? const Color(0x50000000),
+        contentColor: contentColor ?? const Color(0x80000000),
         textStyle: style ?? OuiTheme.bodyMedium!.copyWith(
           color: Colors.white,
         )
@@ -72,7 +72,7 @@ class OuiToast {
                             horizontal: 15
                           ),
                           decoration: BoxDecoration(
-                              color: const Color(0x50000000),
+                              color: const Color(0x80000000),
                               borderRadius: BorderRadius.circular(10)
                           ),
                           child: Column(
@@ -116,7 +116,7 @@ Future<void> toast(text, {
   TextStyle? style,
   WrapAnimation? wrapAnimation,
 }) async => OuiToast.toast(
-  duration: duration ?? Duration(seconds: 2),
+  duration: duration ?? const Duration(seconds: 2),
   text: text,
   wrapAnimation: wrapAnimation,
     contentPadding: contentPadding,

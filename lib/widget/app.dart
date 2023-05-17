@@ -1,5 +1,6 @@
 import 'package:aming_kit/aming_kit.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
@@ -133,7 +134,8 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
         // builder: (context, child) {
         //   return EasyLoading.init(builder: widget.builder);
         // },
-        builder: (context, child) {
+        builder: EasyLoading.init(
+          builder: (context, child) {
             Widget _child = botToastBuilder(context, child);
             if(widget.showModeBanner == true){
               return Banner(
@@ -148,6 +150,7 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
             }
 
           },
+        ),
         ),
       // child:
     );
