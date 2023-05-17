@@ -1,10 +1,12 @@
 import 'package:aming_kit/aming_kit.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
 class OuiMaterialApp extends StatefulWidget {
-  const OuiMaterialApp({Key? key,
+  const OuiMaterialApp({
+    Key? key,
     this.routes,
     this.home,
     this.debugShowCheckedModeBanner,
@@ -38,7 +40,7 @@ class OuiMaterialApp extends StatefulWidget {
 
   static void restartApp({BuildContext? context}) {
     BuildContext tmpContext = context ?? OuiGlobal.globalContext!;
-    if(!isNotNull(tmpContext)) throw contextError;
+    if (!isNotNull(tmpContext)) throw contextError;
     tmpContext.findAncestorStateOfType<_OuiMaterialApp>()?.restartApp();
   }
 
@@ -47,7 +49,6 @@ class OuiMaterialApp extends StatefulWidget {
 }
 
 class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver {
-
   Key appKey = UniqueKey();
   Key bannerKey = UniqueKey();
   final botToastBuilder = BotToastInit();
@@ -62,28 +63,25 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
     //渲染后
   }
 
-
-
   @override
-  void didChangeMetrics(){
+  void didChangeMetrics() {
     OuiSize.init(number: widget.designScreenWidth, isForce: true);
     super.didChangeMetrics();
   }
 
-  void initApp() async{
+  void initApp() async {
     OuiGlobal.initMaterialApp = true;
     await OuiCache.init();
     OuiRoute.init(widget.routes);
     OuiApp.initAppDir();
     OuiApp.initPackageInfo();
-    if(isNotNull(widget.onInit)) await widget.onInit!;
+    if (isNotNull(widget.onInit)) await widget.onInit!;
 
-    Future.delayed(Duration(seconds: 1), (){
+    Future.delayed(Duration(seconds: 1), () {
       print(widget.bannerMessage);
-      if(mounted) setState(() {});
+      if (mounted) setState(() {});
     });
   }
-
 
   @override
   void dispose() {
@@ -118,8 +116,7 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
         navigatorObservers: [
           routeObserver,
           BotToastNavigatorObserver(),
-          if(isNotNull(widget.navigatorObservers))
-            ...widget.navigatorObservers!.map((e) => e).toList(),
+          if (isNotNull(widget.navigatorObservers)) ...widget.navigatorObservers!.map((e) => e).toList(),
         ],
         debugShowCheckedModeBanner: (widget.debugShowCheckedModeBanner == true && widget.showModeBanner == false) ?? false,
         onGenerateRoute: OuiRoute.generator,
@@ -133,12 +130,13 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
         // builder: (context, child) {
         //   return EasyLoading.init(builder: widget.builder);
         // },
-        builder: (context, child) {
+        builder: EasyLoading.init(
+          builder: (context, child) {
             Widget _child = botToastBuilder(context, child);
-            if(widget.showModeBanner == true){
+            if (widget.showModeBanner == true) {
               return Banner(
                 key: bannerKey,
-                message: widget.bannerMessage??"debug",
+                message: widget.bannerMessage ?? "debug",
                 location: BannerLocation.topEnd,
                 child: _child,
                 color: widget.bannerColor ?? Color(0xA0B71C1C),
@@ -146,9 +144,9 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
             } else {
               return _child;
             }
-
           },
         ),
+      ),
       // child:
     );
   }
