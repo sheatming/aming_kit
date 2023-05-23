@@ -44,6 +44,20 @@ class OuiMaterialApp extends StatefulWidget {
     tmpContext.findAncestorStateOfType<_OuiMaterialApp>()?.restartApp();
   }
 
+  static Map<String, OverlayEntry?> entrys = {};
+
+  static TransitionBuilder init({
+    TransitionBuilder? builder,
+  }) {
+    return (BuildContext context, Widget? child) {
+      if (builder != null) {
+        return builder(context, OuiOverlayEntry(child: child));
+      } else {
+        return OuiOverlayEntry(child: child);
+      }
+    };
+  }
+
   @override
   State<OuiMaterialApp> createState() => _OuiMaterialApp();
 }
@@ -77,7 +91,7 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
     OuiApp.initPackageInfo();
     if (isNotNull(widget.onInit)) await widget.onInit!;
 
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       print(widget.bannerMessage);
       if (mounted) setState(() {});
     });
@@ -138,8 +152,8 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
                 key: bannerKey,
                 message: widget.bannerMessage ?? "debug",
                 location: BannerLocation.topEnd,
+                color: widget.bannerColor ?? const Color(0xA0B71C1C),
                 child: _child,
-                color: widget.bannerColor ?? Color(0xA0B71C1C),
               );
             } else {
               return _child;
@@ -148,6 +162,52 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
         ),
       ),
       // child:
+    );
+  }
+}
+
+class OuiOverlayEntry extends StatefulWidget {
+  final Widget? child;
+
+  const OuiOverlayEntry({
+    Key? key,
+    required this.child,
+  })  : assert(child != null),
+        super(key: key);
+
+  @override
+  State<OuiOverlayEntry> createState() => _OuiOverlayEntryState();
+}
+
+class _OuiOverlayEntryState extends State<OuiOverlayEntry> {
+  late OverlayEntry _overlayEntry;
+
+  @override
+  void initState() {
+    super.initState();
+    _overlayEntry = OverlayEntry(
+      builder: (BuildContext context) => EasyLoading.instance.w ?? Container(),
+    );
+    OuiMaterialApp.entrys.addAll({"system": _overlayEntry});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Overlay(
+        initialEntries: [
+          OverlayEntry(
+            builder: (BuildContext context) {
+              if (widget.child != null) {
+                return widget.child!;
+              } else {
+                return Container();
+              }
+            },
+          ),
+          _overlayEntry,
+        ],
+      ),
     );
   }
 }
