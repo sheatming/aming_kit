@@ -99,6 +99,7 @@ Future<void> toast(
   Color? contentColor,
   TextStyle? style,
   WrapAnimation? wrapAnimation,
+  AlignmentGeometry? align,
 }) async =>
     OuiToast.toast(
       duration: duration ?? const Duration(seconds: 2),
@@ -107,6 +108,7 @@ Future<void> toast(
       contentPadding: contentPadding,
       contentColor: contentColor,
       style: style,
+      align: align ?? const Alignment(0, 0.8),
     );
 
 Future<void> showLoading({
