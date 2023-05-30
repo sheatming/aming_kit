@@ -3,12 +3,22 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class OuiToast {
-  static Future<void> toast({String? text, Duration? duration, EdgeInsetsGeometry? contentPadding, WrapAnimation? wrapAnimation, Color? contentColor, TextStyle? style, AlignmentGeometry? align = const Alignment(0, 0.8)}) async {
+  static Future<void> toast({
+    String? text,
+    Duration? duration,
+    EdgeInsetsGeometry? contentPadding,
+    WrapAnimation? wrapAnimation,
+    Color? contentColor,
+    TextStyle? style,
+    AlignmentGeometry? align = const Alignment(0, 0.8),
+    BorderRadiusGeometry? borderRadius,
+  }) async {
     BotToast.showText(
         duration: duration,
         text: text ?? "",
         align: align,
         wrapAnimation: wrapAnimation,
+        borderRadius: borderRadius ?? BorderRadius.all(Radius.circular(8)),
         onlyOne: true,
         contentPadding: contentPadding ?? const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 7),
         contentColor: contentColor ?? const Color(0x80000000),
@@ -100,6 +110,7 @@ Future<void> toast(
   TextStyle? style,
   WrapAnimation? wrapAnimation,
   AlignmentGeometry? align,
+  BorderRadiusGeometry? borderRadius,
 }) async =>
     OuiToast.toast(
       duration: duration ?? const Duration(seconds: 2),
@@ -108,6 +119,7 @@ Future<void> toast(
       contentPadding: contentPadding,
       contentColor: contentColor,
       style: style,
+      borderRadius: borderRadius,
       align: align ?? const Alignment(0, 0.8),
     );
 
