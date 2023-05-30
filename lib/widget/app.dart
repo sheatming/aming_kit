@@ -70,7 +70,7 @@ class _OuiMaterialApp extends State<OuiMaterialApp> with WidgetsBindingObserver 
   void initState() {
     // OuiSize.init(widget.designWidthSize);
     //渲染前
-    OuiSize.init(number: widget.designScreenWidth);
+    OuiSize.init(number: widget.designScreenWidth, isForce: widget.designScreenWidth != 750.0);
     initApp();
     super.initState();
     WidgetsBinding.instance.addObserver(this);
