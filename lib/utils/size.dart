@@ -1,11 +1,9 @@
 import 'package:aming_kit/aming_kit.dart';
-import 'dart:ui';
-
 
 double px(double size) => OuiSize.px(size);
 
-extension SizeNumber on num{
-  double get px{
+extension SizeNumber on num {
+  double get px {
     return OuiSize.px(this);
   }
 }
@@ -21,58 +19,57 @@ class OuiSize {
   static double get _pixelRatio => mediaQuery.devicePixelRatio;
   static double _ratio = 0;
   static double get ratio => _ratio;
-  static init({double number = 750, bool isForce = false}){
-    if(!isForce){
-      if(initialization){
+  static init({double number = 750, bool isForce = false}) {
+    if (!isForce) {
+      if (initialization) {
         return;
       }
     }
-    mediaQuery = MediaQueryData.fromWindow(window);
+    mediaQuery = MediaQueryData.fromView(View.of(OuiGlobal.globalContext!));
     double uiWidth = number;
     _ratio = _width / uiWidth;
-    if(!initialization) log.system("initialization design size: $uiWidth screenWidth: $_width screenHeight: $_height", tag: "Size");
+    if (!initialization) log.system("initialization design size: $uiWidth screenWidth: $_width screenHeight: $_height", tag: "Size");
     initialization = true;
   }
 
-  static Size size(){
+  static Size size() {
     return mediaQuery.size;
   }
 
-  static px(number){
-    if(!isNotNull(_ratio) || _ratio == 0) init(number: 750);
+  static px(number) {
+    if (!isNotNull(_ratio) || _ratio == 0) init(number: 750);
     return number * _ratio;
   }
 
-  static onePx(){
+  static onePx() {
     return 1 / _pixelRatio;
   }
 
-  static screenWidth(){
+  static screenWidth() {
     return _width;
   }
 
-  static screenHeight(){
+  static screenHeight() {
     return _height;
   }
 
-  static padTopHeight(){
+  static padTopHeight() {
     return _topbarHeight;
   }
 
-  static padBotHeight(){
+  static padBotHeight() {
     return _botbarHeight;
   }
 
-  static statusBarHeight(){
+  static statusBarHeight() {
     return mediaQuery.padding.top;
   }
 
-  static touchBarHeight(){
+  static touchBarHeight() {
     return mediaQuery.padding.bottom;
   }
 
-  static toolBarHeight(){
+  static toolBarHeight() {
     return kToolbarHeight;
   }
 }
-
