@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:aming_kit/aming_kit.dart';
 
 double px(double size) => OuiSize.px(size);
@@ -25,7 +27,7 @@ class OuiSize {
         return;
       }
     }
-    mediaQuery = MediaQueryData.fromView(View.of(OuiGlobal.globalContext!));
+    mediaQuery = MediaQueryData.fromView(window);
     double uiWidth = number;
     _ratio = _width / uiWidth;
     if (!initialization) log.system("initialization design size: $uiWidth screenWidth: $_width screenHeight: $_height", tag: "Size");
