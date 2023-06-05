@@ -5,9 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
-
-class OuiApp{
-
+class OuiApp {
   static String getTemporaryDir = "";
   static String getAppSupportDir = "";
   static String getAppDocumentDir = "";
@@ -21,38 +19,15 @@ class OuiApp{
     required Widget appChild,
     SystemUiOverlayStyle? systemUiOverlayStyle,
     Function<Widget>(String message, Object error)? errorWidgetFn,
-  }) async{
-
-      FlutterError.onError = (FlutterErrorDetails details) {
-        if(isNotNull(details) && isNotNull(details.stack))Zone.current.handleUncaughtError(details.exception, details.stack as StackTrace);
-      };
-      ErrorWidget.builder = (FlutterErrorDetails details) {
-        Zone.current.handleUncaughtError(details.exception, details.stack as StackTrace);
-        String message = '';
-        assert(() {
-          String stringify(Object exception) {
-            try {
-              return exception.toString();
-            } catch (e) {
-              // intentionally left empty.
-            }
-            return 'Error';
-          }
-          message = '${stringify(details.exception)}\nSee also: https://flutter.dev/docs/testing/errors';
-          return true;
-        }());
-        final Object exception = details.exception;
-        if (errorWidgetFn != null) return errorWidgetFn(message, exception);
-        return ErrorWidget.withDetails(
-            message: message,
-            error: exception is FlutterError ? exception : null);
-      };
-
-    return runZonedGuarded(() async {
+  }) async {
+    OuiRunTimePoint.startPoint("runApp", "应用启动时间");
+    return runZonedGuarded(
+      () async {
         WidgetsFlutterBinding.ensureInitialized();
-        Future.delayed(const Duration(milliseconds: 300), () =>  runApp(appChild));
-        if(isNotNull(systemUiOverlayStyle)) SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle!);
+        runApp(appChild);
+        if (isNotNull(systemUiOverlayStyle)) SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle!);
       },
+
       /// zone错误回调函数
       ((error, StackTrace stack) {
         log.error(error.toString().replaceAll("#0   ", " "), stackTrace: stack, showTraceList: true, tag: error.runtimeType.toString());
@@ -65,20 +40,19 @@ class OuiApp{
     );
   }
 
-  static Future initAppDir() async{
+  static Future initAppDir() async {
     getTemporaryDir = await getTemporaryDirectory().then((value) => value.path);
     getAppSupportDir = await getApplicationSupportDirectory().then((value) => value.path);
     getAppDocumentDir = await getApplicationDocumentsDirectory().then((value) => value.path);
     log.system("initialization", tag: "DirInfo");
   }
 
-
   static Future initPackageInfo() async {
     packageInfo = await PackageInfo.fromPlatform();
     log.system("initialization", tag: "PackageInfo");
   }
 
-  static Future setEnv(String env) async{
+  static Future setEnv(String env) async {
     OuiCache.setString("oui_env", env);
   }
 
@@ -86,4 +60,3 @@ class OuiApp{
     return OuiCache.getString("oui_env", defValue: "");
   }
 }
-

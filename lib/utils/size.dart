@@ -27,7 +27,7 @@ class OuiSize {
         return;
       }
     }
-    mediaQuery = MediaQueryData.fromView(window);
+    mediaQuery = MediaQueryData.fromView(PlatformDispatcher.instance.views as FlutterView);
     double uiWidth = number;
     _ratio = _width / uiWidth;
     if (!initialization) log.system("initialization design size: $uiWidth screenWidth: $_width screenHeight: $_height", tag: "Size");
