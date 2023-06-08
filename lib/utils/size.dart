@@ -17,8 +17,8 @@ class OuiSize {
   static late FlutterView flutterView;
   static double get _width => flutterView.physicalSize.width;
   static double get _height => flutterView.physicalSize.height;
-  static double get _topbarHeight => flutterView.padding.top;
-  static double get _botbarHeight => flutterView.padding.bottom;
+  static double get _topbarHeight => flutterView.padding.top / _pixelRatio;
+  static double get _botbarHeight => flutterView.padding.bottom / _pixelRatio;
   static double get _pixelRatio => flutterView.devicePixelRatio;
   static double _ratio = 0;
   static double get ratio => _ratio;
@@ -32,8 +32,8 @@ class OuiSize {
     flutterView = WidgetsBinding.instance.platformDispatcher.views.first;
     // mediaQuery = MediaQueryData.fromView(window);
     double uiWidth = number;
-    _ratio = _width / uiWidth;
-    if (!initialization) log.system("initialization design size: $uiWidth screenWidth: $_width screenHeight: $_height", tag: "Size");
+    _ratio = (_width / _pixelRatio) / uiWidth;
+    if (!initialization) log.system("initialization design size: $uiWidth screenWidth: $_width screenHeight: $_height ratio: $_ratio", tag: "Size");
     initialization = true;
   }
 
