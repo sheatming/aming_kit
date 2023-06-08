@@ -16,20 +16,23 @@ void openDevTools({
   OuiDevOption? option7,
   OuiDevOption? option8,
   OuiDevOption? option9,
-}) => openOverlay("devTools",
-    OuiDevTools(
-  option1: option1,
-  option2: option2,
-  option3: option3,
-  option4: option4,
-  option5: option5,
-  option6: option6,
-  option7: option7,
-  option8: option8,
-  option9: option9,
-), context: context);
+}) =>
+    openOverlay(
+        "devTools",
+        OuiDevTools(
+          option1: option1,
+          option2: option2,
+          option3: option3,
+          option4: option4,
+          option5: option5,
+          option6: option6,
+          option7: option7,
+          option8: option8,
+          option9: option9,
+        ),
+        context: context);
 
-class OuiDevOption{
+class OuiDevOption {
   OuiDevOption(this.icon, this.text, {this.onClick});
   final IconData? icon;
   final String? text;
@@ -48,7 +51,7 @@ class OuiDevTools extends StatefulWidget {
     this.option7,
     this.option8,
     this.option9,
-  }):super(key: key);
+  }) : super(key: key);
 
   final OuiDevOption? option1;
   final OuiDevOption? option2;
@@ -59,8 +62,6 @@ class OuiDevTools extends StatefulWidget {
   final OuiDevOption? option7;
   final OuiDevOption? option8;
   final OuiDevOption? option9;
-
-
 
   static void open({
     BuildContext? context,
@@ -76,50 +77,49 @@ class OuiDevTools extends StatefulWidget {
   }) {
     log.setDebugMode(true);
     OuiCache.setBool("runDebug", true);
-    openOverlay("devTools", OuiDevTools(
-      option1: option1 ?? OuiDevOption(Icons.construction_outlined, "控制台", onClick: isNotNull(OuiGlobal.globalContext) ? () => showModalBottomSheet(
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        context: OuiGlobal.globalContext!,
-        builder: (BuildContext context){
-          return const OuiConsole();
-        },
-      ) : null),
-      option2: option2 ?? OuiDevOption(Icons.warning, ""),
-      option3: option3 ?? OuiDevOption(Icons.warning, ""),
-      option4: option4 ?? OuiDevOption(Icons.warning, ""),
-      option5: option5 ?? OuiDevOption(Icons.warning, ""),
-      option6: option6 ?? OuiDevOption(Icons.rotate_left, isNotNull(OuiGlobal.globalContext) ? "重启应用" : "退出应用", onClick: (){
-        if(isNotNull(OuiGlobal.globalContext) && OuiGlobal.initMaterialApp){
-          OuiMaterialApp.restartApp();
-        } else {
-          exit(0);
-        }
-      }),
-      option7: option7 ?? OuiDevOption(Icons.cleaning_services, "清空缓存", onClick: (){
-        OuiCache.clear();
-        OuiCache.setBool("runDebug", true);
-        if(isNotNull(OuiGlobal.globalContext) && OuiGlobal.initMaterialApp){
-          OuiMaterialApp.restartApp();
-        } else {
-          exit(0);
-        }
-      }),
-      option8: option8 ?? OuiDevOption(Icons.cached, "重启工具", onClick: (){
-        open(
-            option1: option1,
-            option2: option2,
-            option3: option3,
-            option4: option4,
-            option5: option5,
-            option6: option6,
-            option7: option7,
-            option8: option8,
-            option9: option9
-        );
-      }),
-      option9: option9 ?? OuiDevOption(Icons.exit_to_app, "退出工具", onClick: () => close()),
-    ));
+    openOverlay(
+        "devTools",
+        OuiDevTools(
+          option1: option1 ??
+              OuiDevOption(Icons.construction_outlined, "控制台",
+                  onClick: isNotNull(OuiGlobal.globalContext)
+                      ? () => showModalBottomSheet(
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            context: OuiGlobal.globalContext!,
+                            builder: (BuildContext context) {
+                              return const OuiConsole();
+                            },
+                          )
+                      : null),
+          option2: option2 ?? OuiDevOption(Icons.warning, ""),
+          option3: option3 ?? OuiDevOption(Icons.warning, ""),
+          option4: option4 ?? OuiDevOption(Icons.warning, ""),
+          option5: option5 ?? OuiDevOption(Icons.warning, ""),
+          option6: option6 ??
+              OuiDevOption(Icons.rotate_left, isNotNull(OuiGlobal.globalContext) ? "重启应用" : "退出应用", onClick: () {
+                if (isNotNull(OuiGlobal.globalContext) && OuiGlobal.initMaterialApp) {
+                  OuiMaterialApp.restartApp();
+                } else {
+                  exit(0);
+                }
+              }),
+          option7: option7 ??
+              OuiDevOption(Icons.cleaning_services, "清空缓存", onClick: () {
+                OuiCache.clear();
+                OuiCache.setBool("runDebug", true);
+                if (isNotNull(OuiGlobal.globalContext) && OuiGlobal.initMaterialApp) {
+                  OuiMaterialApp.restartApp();
+                } else {
+                  exit(0);
+                }
+              }),
+          option8: option8 ??
+              OuiDevOption(Icons.cached, "重启工具", onClick: () {
+                open(option1: option1, option2: option2, option3: option3, option4: option4, option5: option5, option6: option6, option7: option7, option8: option8, option9: option9);
+              }),
+          option9: option9 ?? OuiDevOption(Icons.exit_to_app, "退出工具", onClick: () => close()),
+        ));
     log.system("initialization", tag: "DebugTools");
   }
 
@@ -134,7 +134,6 @@ class OuiDevTools extends StatefulWidget {
 }
 
 class _OuiDevTools extends State<OuiDevTools> {
-
   final String _configDX = "oui_bugbox_dx";
   final String _configDY = "oui_bugbox_dy";
   final double _size = 50;
@@ -148,17 +147,17 @@ class _OuiDevTools extends State<OuiDevTools> {
   @override
   void initState() {
     super.initState();
-    if(mounted){
+    if (mounted) {
       setState(() {
-        if(isNotNull(widget.option1)) options.add(widget.option1!);
-        if(isNotNull(widget.option2)) options.add(widget.option2!);
-        if(isNotNull(widget.option3)) options.add(widget.option3!);
-        if(isNotNull(widget.option4)) options.add(widget.option4!);
-        if(isNotNull(widget.option5)) options.add(widget.option5!);
-        if(isNotNull(widget.option6)) options.add(widget.option6!);
-        if(isNotNull(widget.option7)) options.add(widget.option7!);
-        if(isNotNull(widget.option8)) options.add(widget.option8!);
-        if(isNotNull(widget.option9)) options.add(widget.option9!);
+        if (isNotNull(widget.option1)) options.add(widget.option1!);
+        if (isNotNull(widget.option2)) options.add(widget.option2!);
+        if (isNotNull(widget.option3)) options.add(widget.option3!);
+        if (isNotNull(widget.option4)) options.add(widget.option4!);
+        if (isNotNull(widget.option5)) options.add(widget.option5!);
+        if (isNotNull(widget.option6)) options.add(widget.option6!);
+        if (isNotNull(widget.option7)) options.add(widget.option7!);
+        if (isNotNull(widget.option8)) options.add(widget.option8!);
+        if (isNotNull(widget.option9)) options.add(widget.option9!);
 
         double x = OuiCache.getDouble(_configDX, defValue: 0.0);
         double y = OuiCache.getDouble(_configDY, defValue: kToolbarHeight + 100);
@@ -171,7 +170,6 @@ class _OuiDevTools extends State<OuiDevTools> {
       });
     }
   }
-
 
   Offset _calOffset(Size size, Offset offset, Offset nextOffset) {
     double dx = 0;
@@ -199,12 +197,10 @@ class _OuiDevTools extends State<OuiDevTools> {
       data: Theme.of(context).copyWith(
         highlightColor: Colors.transparent,
         appBarTheme: AppBarTheme.of(context).copyWith(
-          // brightness: Brightness.dark,
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarBrightness: Brightness.dark,
-          )
-        ),
-
+            // brightness: Brightness.dark,
+            systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarBrightness: Brightness.dark,
+        )),
       ),
       child: AnimatedPositioned(
         left: isOpen == true ? (OuiSize.screenWidth() / 2 - 125) : offset?.dx,
@@ -213,10 +209,10 @@ class _OuiDevTools extends State<OuiDevTools> {
         child: GestureDetector(
           onTap: _open,
           onPanUpdate: (detail) {
-            if(isOpen == false){
+            if (isOpen == false) {
               setState(() {
                 _opacity = 0.3;
-                offset = _calOffset(OuiSize.mediaQuery.size, offset!, detail.delta);
+                offset = _calOffset(OuiSize.size(), offset!, detail.delta);
               });
             }
           },
@@ -225,7 +221,7 @@ class _OuiDevTools extends State<OuiDevTools> {
             double screen50Widget = screenWidget / 2;
             Offset? offset1 = offset;
             Offset? offset2 = offset;
-            if(offset!.dx > screen50Widget){
+            if (offset!.dx > screen50Widget) {
               offset2 = Offset(screenWidget, 0);
             } else {
               offset1 = Offset(0, offset!.dy);
@@ -236,15 +232,14 @@ class _OuiDevTools extends State<OuiDevTools> {
               OuiCache.setDouble(_configDX, offset!.dx);
               OuiCache.setDouble(_configDY, offset!.dy);
             });
-            setTimeout((){
-              if(isOpen == false){
+            setTimeout(() {
+              if (isOpen == false) {
                 setState(() {
                   _opacity = 0;
                 });
               }
             }, time: 1500);
           },
-
           child: AnimatedCrossFade(
             duration: const Duration(milliseconds: 100),
             firstCurve: Curves.easeInSine,
@@ -297,15 +292,14 @@ class _OuiDevTools extends State<OuiDevTools> {
                       height: _size - 23,
                       width: _size - 23,
                       decoration: BoxDecoration(
-
                         color: Colors.white.withOpacity(0.5 + _opacity),
                         borderRadius: BorderRadius.circular(90),
                       ),
-                      child: Icon(Icons.bug_report,
+                      child: Icon(
+                        Icons.bug_report,
                         color: Colors.black.withOpacity(0.3),
                         size: _size - 30,
                       ),
-
                     ),
                   ),
                 ),
@@ -313,17 +307,16 @@ class _OuiDevTools extends State<OuiDevTools> {
             ),
           ),
         ),
-
       ),
     );
   }
 
-  void _open(){
-    if(!isOpen){
+  void _open() {
+    if (!isOpen) {
       setState(() {
         isOpen = true;
         _opacity = 0.3;
-        setTimeout((){
+        setTimeout(() {
           setState(() {
             isOpen = false;
             _opacity = 0;
@@ -333,7 +326,7 @@ class _OuiDevTools extends State<OuiDevTools> {
     }
   }
 
-  Widget _btn(OuiDevOption option){
+  Widget _btn(OuiDevOption option) {
     GestureTapCallback? onClick = option.onClick;
     String? text = option.text;
     IconData? icon = option.icon;
@@ -341,47 +334,47 @@ class _OuiDevTools extends State<OuiDevTools> {
     return Visibility(
       visible: isOpen,
       child: GestureDetector(
-        onTap: (){
+        onTap: () {
           setState(() {
             clearTimeout("debugToolX");
             isOpen = false;
             _opacity = 0;
           });
-          if(isNotNull(onClick)) onClick!();
+          if (isNotNull(onClick)) onClick!();
         },
-
         child: Container(
           margin: const EdgeInsets.all(1),
           height: 80,
           width: 80,
-          decoration: const BoxDecoration(
-          ),
+          decoration: const BoxDecoration(),
           child: Center(
-            child: isNotNull(onClick) ? Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height: 40,
-                  width: 40,
-                  child: Center(
-                    child: Icon(icon, color: Colors.white),
-                  ),
-                ),
-                Text(text ?? "",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ) : null,
+            child: isNotNull(onClick)
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: Center(
+                          child: Icon(icon, color: Colors.white),
+                        ),
+                      ),
+                      Text(
+                        text ?? "",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  )
+                : null,
           ),
         ),
       ),
     );
   }
 }
-
 
 autoOpenDevTool({
   BuildContext? context,
@@ -394,33 +387,24 @@ autoOpenDevTool({
   OuiDevOption? option7,
   OuiDevOption? option8,
   OuiDevOption? option9,
-}){
-  if(OuiCache.getBool("runDebug", defValue: false)){
-    OuiDevTools.open(
-        option1: option1,
-        option2: option2,
-        option3: option3,
-        option4: option4,
-        option5: option5,
-        option6: option6,
-        option7: option7,
-        option8: option8,
-        option9: option9
-    );
+}) {
+  if (OuiCache.getBool("runDebug", defValue: false)) {
+    OuiDevTools.open(option1: option1, option2: option2, option3: option3, option4: option4, option5: option5, option6: option6, option7: option7, option8: option8, option9: option9);
   }
 }
 
-class OuiRunTimePoint{
-
+class OuiRunTimePoint {
   static Map<String, Map<String, dynamic>> pointLog = {};
 
-  static void startPoint(String name, String title) async{
+  static void startPoint(String name, String title) async {
     pointLog.remove(name);
-    pointLog.addAll({name: {"sp": DateTime.now().millisecondsSinceEpoch, "ep": 0, "title": title}});
+    pointLog.addAll({
+      name: {"sp": DateTime.now().millisecondsSinceEpoch, "ep": 0, "title": title}
+    });
   }
 
-  static void endPoint(String name) async{
-    if(pointLog.containsKey(name)){
+  static void endPoint(String name) async {
+    if (pointLog.containsKey(name)) {
       Map<String, dynamic>? tmp = pointLog[name];
       tmp!['ep'] = DateTime.now().millisecondsSinceEpoch;
       pointLog[name] = tmp;
@@ -428,10 +412,10 @@ class OuiRunTimePoint{
   }
 
   static int getMS(String name) {
-    if(pointLog.containsKey(name)){
+    if (pointLog.containsKey(name)) {
       Map<String, dynamic>? tmp = pointLog[name];
-      if(tmp!['ep']! == 0) return -2;
-      if(tmp['sp']! == 0) return -1;
+      if (tmp!['ep']! == 0) return -2;
+      if (tmp['sp']! == 0) return -1;
       return tmp['ep']! - tmp['sp']!;
     } else {
       return -2;

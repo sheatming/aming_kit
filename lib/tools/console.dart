@@ -10,8 +10,7 @@ class OuiConsole extends StatefulWidget {
   State<OuiConsole> createState() => _OuiConsole();
 }
 
-class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
-
+class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -20,7 +19,6 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -28,11 +26,7 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
         top: OuiSize.statusBarHeight() + OuiSize.toolBarHeight(),
       ),
       child: Theme(
-        data: ThemeData(
-          tabBarTheme: TabBarTheme(
-
-          )
-        ),
+        data: ThemeData(tabBarTheme: TabBarTheme()),
         child: Scaffold(
           appBar: AppBar(
             elevation: 0,
@@ -40,10 +34,7 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
             centerTitle: true,
             backgroundColor: Theme.of(context).primaryColor,
             titleTextStyle: TextStyle(
-              color: Theme.of(context).primaryColor.antiWhite(
-                  lightColor: Colors.white,
-                  darkColor: Colors.black
-              ),
+              color: Theme.of(context).primaryColor.antiWhite(lightColor: Colors.white, darkColor: Colors.black),
             ),
             title: const Text("控制台"),
             // bottom: TabBar(
@@ -86,7 +77,6 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
           body: Column(
             children: [
               TabBar(
-
                 indicatorWeight: 8.px,
                 indicatorSize: TabBarIndicatorSize.tab,
                 isScrollable: true,
@@ -108,10 +98,7 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
                 ),
                 indicatorColor: Theme.of(context).primaryColor,
                 unselectedLabelColor: Colors.black54,
-                unselectedLabelStyle: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 28.px
-                ),
+                unselectedLabelStyle: TextStyle(color: Colors.black54, fontSize: 28.px),
                 controller: _tabController,
                 padding: const EdgeInsets.only(
                   top: 0,
@@ -145,7 +132,6 @@ class _OuiConsole extends State<OuiConsole> with SingleTickerProviderStateMixin{
             ],
           ),
         ),
-
       ),
     );
   }
@@ -159,11 +145,11 @@ class _APPInfo extends StatefulWidget {
 }
 
 class _APPInfoState extends State<_APPInfo> {
-
   @override
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -172,9 +158,7 @@ class _APPInfoState extends State<_APPInfo> {
         // color: Color(0xfffafafa),
       ),
       child: ListView(
-        padding: const EdgeInsets.only(
-            top: 1
-        ),
+        padding: const EdgeInsets.only(top: 1),
         children: [
           _infoItem("APP名称", OuiApp.packageInfo?.appName),
           _infoItem("包名", OuiApp.packageInfo?.packageName),
@@ -197,7 +181,6 @@ class _DeviceInfo extends StatefulWidget {
 }
 
 class _DeviceInfoState extends State<_DeviceInfo> {
-
   AndroidDeviceInfo? androidInfo;
   IosDeviceInfo? iosInfo;
 
@@ -211,12 +194,12 @@ class _DeviceInfoState extends State<_DeviceInfo> {
     await OuiDevice.init();
 
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    if(isIOS){
+    if (isIOS) {
       iosInfo = await deviceInfo.iosInfo;
-    } else if(isAndroid) {
+    } else if (isAndroid) {
       androidInfo = await deviceInfo.androidInfo;
     }
-    if(mounted)setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override
@@ -227,25 +210,20 @@ class _DeviceInfoState extends State<_DeviceInfo> {
         color: Color(0xfff5f5f5),
       ),
       child: ListView(
-        padding: const EdgeInsets.only(
-            top: 1
-        ),
+        padding: const EdgeInsets.only(top: 1),
         children: [
           _infoItem("品牌", OuiDevice.brand),
           _infoItem("型号", OuiDevice.model),
           _infoItem("UUID", OuiDevice.uuid),
           _infoItem("物理设备", OuiDevice.isPhysicalDevice),
           _infoItem("系统版本", OuiDevice.osVersion),
-          _infoItem("屏幕尺寸", "h:${OuiSize.mediaQuery.size.height}  w:${OuiSize.mediaQuery.size.width}"),
-          _infoItem("设备像素比", "${OuiSize.mediaQuery.devicePixelRatio}/${OuiSize.ratio}"),
+          _infoItem("屏幕尺寸", "h:${OuiSize.size().height}  w:${OuiSize.size().width}"),
+          _infoItem("设备像素比", "${OuiSize.flutterView.devicePixelRatio}/${OuiSize.ratio}"),
         ],
       ),
     );
   }
-
 }
-
-
 
 class _ConsoleLog extends StatefulWidget {
   const _ConsoleLog({Key? key}) : super(key: key);
@@ -270,38 +248,38 @@ class _ConsoleLogState extends State<_ConsoleLog> {
         color: Color(0xfff5f5f5),
       ),
       child: RefreshIndicator(
-        onRefresh: _onRefresh,//下拉刷新回调
+        onRefresh: _onRefresh, //下拉刷新回调
         notificationPredicate: defaultScrollNotificationPredicate, //是否应处理滚动通知的检查（是否通知下拉刷新动作）
         child: ListView.builder(
           padding: const EdgeInsets.only(
             bottom: 10,
           ),
           itemCount: _list.length,
-          itemBuilder: (BuildContext context,int index) => _item(_list[index]),
+          itemBuilder: (BuildContext context, int index) => _item(_list[index]),
         ),
       ),
     );
   }
 
-  Future<void> _onRefresh(){
+  Future<void> _onRefresh() {
     setState(() {
       _list = consoleLog;
     });
-    return Future.delayed(const Duration(seconds: 1),(){});
+    return Future.delayed(const Duration(seconds: 1), () {});
   }
 
-  Widget _item(ConsoleLogItem item){
+  Widget _item(ConsoleLogItem item) {
     List<String>? starkTrace = isNotNull(item.stackTrace) ? formatStackTrace(item.stackTrace!) : null;
     return GestureDetector(
       onTap: () => openDetailDialog(context, "日志详情", children: [
         _detailText("时间", item.date.toTime()),
         _detailText("类型", item.cate.toString().replaceAll("LogCate.", "").toUpperCase()),
-        if(isNotNull(item.tag)) _detailText("标签", item.tag!),
+        if (isNotNull(item.tag)) _detailText("标签", item.tag!),
         _detailText("方法", item.path.toString()),
         const SizedBox(height: 8),
         const Divider(height: 1, color: Colors.white),
         _detailText("内容", item.content.toString()),
-        if(isNotNull(starkTrace))
+        if (isNotNull(starkTrace))
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -315,8 +293,6 @@ class _ConsoleLogState extends State<_ConsoleLog> {
               }).toList(),
             ],
           ),
-
-
       ]),
       child: Container(
         color: Colors.white,
@@ -333,24 +309,29 @@ class _ConsoleLogState extends State<_ConsoleLog> {
               Row(
                 children: [
                   _statusText(item.cate),
-                  const SizedBox(width: 8,),
-                  Text(item.tag ?? "", style: const TextStyle(
-                    fontSize: 12,
-                  )),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text(item.tag ?? "",
+                      style: const TextStyle(
+                        fontSize: 12,
+                      )),
                   Expanded(child: Container()),
-                  Text(item.date.toTime(), style: const TextStyle(
-                      fontSize: 11,
-                      color: Colors.black38
-                  )),
+                  Text(item.date.toTime(), style: const TextStyle(fontSize: 11, color: Colors.black38)),
                 ],
               ),
-              const SizedBox(height: 8,),
+              const SizedBox(
+                height: 8,
+              ),
               Row(
                 children: [
-                  Expanded(child: Text(item.content, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(
-                    fontSize: 12,
-                  ))),
-
+                  Expanded(
+                      child: Text(item.content,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                          ))),
                 ],
               ),
             ],
@@ -360,9 +341,9 @@ class _ConsoleLogState extends State<_ConsoleLog> {
     );
   }
 
-  Widget _statusText(LogCate cate){
+  Widget _statusText(LogCate cate) {
     Color backgroundColor = Colors.redAccent;
-    switch(cate){
+    switch (cate) {
       case LogCate.debug:
         backgroundColor = Colors.blue;
         break;
@@ -384,19 +365,15 @@ class _ConsoleLogState extends State<_ConsoleLog> {
         color: backgroundColor,
         borderRadius: BorderRadius.circular(3),
       ),
-      padding: const EdgeInsets.symmetric(
-          vertical: 1.3,
-          horizontal: 3
-      ),
-      child: Text(cate.toString().replaceAll("LogCate.", "").toUpperCase(), style: TextStyle(
-        fontSize: 12,
-        color: backgroundColor.antiWhite(),
-      )),
+      padding: const EdgeInsets.symmetric(vertical: 1.3, horizontal: 3),
+      child: Text(cate.toString().replaceAll("LogCate.", "").toUpperCase(),
+          style: TextStyle(
+            fontSize: 12,
+            color: backgroundColor.antiWhite(),
+          )),
     );
   }
 }
-
-
 
 class _NetworkLog extends StatefulWidget {
   const _NetworkLog({Key? key}) : super(key: key);
@@ -406,7 +383,6 @@ class _NetworkLog extends StatefulWidget {
 }
 
 class _NetworkLogState extends State<_NetworkLog> {
-
   List<NetworkLogItem> _list = [];
 
   @override
@@ -422,33 +398,31 @@ class _NetworkLogState extends State<_NetworkLog> {
         color: Color(0xfff5f5f5),
       ),
       child: RefreshIndicator(
-        onRefresh: _onRefresh,//下拉刷新回调
+        onRefresh: _onRefresh, //下拉刷新回调
         notificationPredicate: defaultScrollNotificationPredicate, //是否应处理滚动通知的检查（是否通知下拉刷新动作）
         child: ListView.builder(
           padding: const EdgeInsets.only(
             bottom: 10,
           ),
           itemCount: _list.length,
-          itemBuilder: (BuildContext context,int index) => _item(_list[index]),
+          itemBuilder: (BuildContext context, int index) => _item(_list[index]),
         ),
       ),
     );
   }
 
-  Future<void> _onRefresh(){
+  Future<void> _onRefresh() {
     setState(() {
       _list = networkLog;
     });
-    return Future.delayed(const Duration(seconds: 1),(){});
+    return Future.delayed(const Duration(seconds: 1), () {});
   }
 
-
-
-  Widget _item(NetworkLogItem item){
+  Widget _item(NetworkLogItem item) {
     return GestureDetector(
       onTap: () => openDetailDialog(context, "网络请求", children: [
         GestureDetector(
-          onTap: (){
+          onTap: () {
             Clipboard.setData(ClipboardData(text: item.url));
           },
           child: _detailText("请求Url", item.url),
@@ -479,33 +453,33 @@ class _NetworkLogState extends State<_NetworkLog> {
               Row(
                 children: [
                   _statusText(item.statusCode),
-                  const SizedBox(width: 8,),
-                  Text(item.method, style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold
-                  )),
-                  const SizedBox(width: 8,),
-                  Text("${item.queryTime}ms", style: const TextStyle(
-                    fontSize: 12,
-                  )),
-
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text(item.method, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text("${item.queryTime}ms",
+                      style: const TextStyle(
+                        fontSize: 12,
+                      )),
                   Expanded(child: Container()),
-                  Text(item.date.toTime(), style: const TextStyle(
-                      fontSize: 11,
-                      color: Colors.black38
-                  )),
+                  Text(item.date.toTime(), style: const TextStyle(fontSize: 11, color: Colors.black38)),
                 ],
               ),
-              const SizedBox(height: 8,),
+              const SizedBox(
+                height: 8,
+              ),
               Row(
                 children: [
-                  Expanded(child: Text("Url: ${item.url}", style: const TextStyle(
-                    fontSize: 12,
-                  ))),
-
+                  Expanded(
+                      child: Text("Url: ${item.url}",
+                          style: const TextStyle(
+                            fontSize: 12,
+                          ))),
                 ],
               ),
-
             ],
           ),
         ),
@@ -513,9 +487,9 @@ class _NetworkLogState extends State<_NetworkLog> {
     );
   }
 
-  Widget _statusText(int code){
+  Widget _statusText(int code) {
     Color backgroundColor = Colors.redAccent;
-    switch(code){
+    switch (code) {
       case 200:
         backgroundColor = Colors.lightGreen;
         break;
@@ -528,14 +502,12 @@ class _NetworkLogState extends State<_NetworkLog> {
         color: backgroundColor,
         borderRadius: BorderRadius.circular(3),
       ),
-      padding: const EdgeInsets.symmetric(
-          vertical: 1.3,
-          horizontal: 3
-      ),
-      child: Text("$code", style: TextStyle(
-        fontSize: 12,
-        color: backgroundColor.antiWhite(),
-      )),
+      padding: const EdgeInsets.symmetric(vertical: 1.3, horizontal: 3),
+      child: Text("$code",
+          style: TextStyle(
+            fontSize: 12,
+            color: backgroundColor.antiWhite(),
+          )),
     );
   }
 }
@@ -548,26 +520,21 @@ class _PerformanceLog extends StatefulWidget {
 }
 
 class _PerformanceLogState extends State<_PerformanceLog> {
-
   // final int _runTime = OuiRunTimePoint.getMS("runApp");
-  String _runTimeText(int xTime){
-    if(xTime > 0) return "${(xTime / 1000).toString()}s";
-    if(xTime == -2) return "无计划";
+  String _runTimeText(int xTime) {
+    if (xTime > 0) return "${(xTime / 1000).toString()}s";
+    if (xTime == -2) return "无计划";
     return "计算中";
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     return Container(
       decoration: const BoxDecoration(
         color: Color(0xfff5f5f5),
       ),
       child: ListView(
-        padding: const EdgeInsets.only(
-            top: 1
-        ),
+        padding: const EdgeInsets.only(top: 1),
         children: [
           ...OuiRunTimePoint.pointLog.keys.map((value) {
             return _infoItem(OuiRunTimePoint.pointLog[value]!['title'], _runTimeText(OuiRunTimePoint.getMS(value)));
@@ -578,51 +545,51 @@ class _PerformanceLogState extends State<_PerformanceLog> {
   }
 }
 
-
-Widget _detailText(String title, String text){
+Widget _detailText(String title, String text) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       const SizedBox(height: 8),
       GestureDetector(
-        onLongPress: () async{
-          if(isNotNull(text)){
+        onLongPress: () async {
+          if (isNotNull(text)) {
             await Clipboard.setData(ClipboardData(text: text));
             OuiToast.toast(text: "已复制到剪切板");
           }
         },
-        child: Text("$title: $text", style: const TextStyle(
-          fontSize: 12,
-          color: Colors.white,
-        )),
+        child: Text("$title: $text",
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.white,
+            )),
       )
     ],
   );
 }
 
-Widget _listText(String text){
+Widget _listText(String text) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       const SizedBox(height: 8),
       GestureDetector(
-        onLongPress: () async{
-          if(isNotNull(text)){
+        onLongPress: () async {
+          if (isNotNull(text)) {
             await Clipboard.setData(ClipboardData(text: text));
             OuiToast.toast(text: "已复制到剪切板");
           }
         },
-        child: Text(text, style: const TextStyle(
-          fontSize: 12,
-          color: Colors.white,
-        )),
+        child: Text(text,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.white,
+            )),
       )
     ],
   );
 }
-
 
 /// [object]  解析的对象
 /// [deep]  递归的深度，用来获取缩进的空白长度
@@ -632,13 +599,15 @@ String _convert(dynamic object, int deep, {bool isObject = false}) {
   var nextDeep = deep + 1;
   if (object is Map) {
     var list = object.keys.toList();
-    if (!isObject) {//如果map来自某个字段，则不需要显示缩进
+    if (!isObject) {
+      //如果map来自某个字段，则不需要显示缩进
       buffer.write(getDeepSpace(deep));
     }
     buffer.write("{");
-    if (list.isEmpty) {//当map为空，直接返回‘}’
+    if (list.isEmpty) {
+      //当map为空，直接返回‘}’
       buffer.write("}");
-    }else {
+    } else {
       buffer.write("\n");
       for (int i = 0; i < list.length; i++) {
         buffer.write("${getDeepSpace(nextDeep)}\"${list[i]}\":");
@@ -652,13 +621,15 @@ String _convert(dynamic object, int deep, {bool isObject = false}) {
       buffer.write("${getDeepSpace(deep)}}");
     }
   } else if (object is List) {
-    if (!isObject) {//如果list来自某个字段，则不需要显示缩进
+    if (!isObject) {
+      //如果list来自某个字段，则不需要显示缩进
       buffer.write(getDeepSpace(deep));
     }
     buffer.write("[");
-    if (object.isEmpty) {//当list为空，直接返回‘]’
+    if (object.isEmpty) {
+      //当list为空，直接返回‘]’
       buffer.write("]");
-    }else {
+    } else {
       buffer.write("\n");
       for (int i = 0; i < object.length; i++) {
         buffer.write(_convert(object[i], nextDeep));
@@ -670,16 +641,18 @@ String _convert(dynamic object, int deep, {bool isObject = false}) {
       buffer.write("\n");
       buffer.write("${getDeepSpace(deep)}]");
     }
-  } else if (object is String) {//为字符串时，需要添加双引号并返回当前内容
+  } else if (object is String) {
+    //为字符串时，需要添加双引号并返回当前内容
     buffer.write("\"$object\"");
-  } else if (object is num || object is bool) {//为数字或者布尔值时，返回当前内容
+  } else if (object is num || object is bool) {
+    //为数字或者布尔值时，返回当前内容
     buffer.write(object);
-  }  else {//如果对象为空，则返回null字符串
+  } else {
+    //如果对象为空，则返回null字符串
     buffer.write("null");
   }
   return buffer.toString();
 }
-
 
 String getDeepSpace(int deep) {
   var tab = StringBuffer();
@@ -692,7 +665,7 @@ String getDeepSpace(int deep) {
 void openDetailDialog(BuildContext context, String title, {List<Widget>? children}) => showDialog(
     barrierColor: Colors.transparent,
     context: context,
-    builder: (BuildContext context){
+    builder: (BuildContext context) {
       return GestureDetector(
         onTap: () => goback(),
         child: Center(
@@ -720,15 +693,17 @@ void openDetailDialog(BuildContext context, String title, {List<Widget>? childre
               children: [
                 Row(
                   children: [
-                    Text(title, style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    )),
+                    Text(title,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        )),
                   ],
                 ),
                 const SizedBox(height: 10),
-                Flexible(child: SingleChildScrollView(
+                Flexible(
+                    child: SingleChildScrollView(
                   primary: false,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -744,19 +719,16 @@ void openDetailDialog(BuildContext context, String title, {List<Widget>? childre
           ),
         ),
       );
-    }
-);
+    });
 
-Widget _infoItem(title, content){
+Widget _infoItem(title, content) {
   return Container(
     decoration: const BoxDecoration(
       color: Colors.white,
     ),
-    margin: const EdgeInsets.only(
-        bottom: 1
-    ),
+    margin: const EdgeInsets.only(bottom: 1),
     child: ListTile(
-      onLongPress: () async{
+      onLongPress: () async {
         await Clipboard.setData(ClipboardData(text: "$title: $content"));
         OuiToast.toast(text: "已复制到剪切板");
       },

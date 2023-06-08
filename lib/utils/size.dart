@@ -13,12 +13,13 @@ extension SizeNumber on num {
 class OuiSize {
   // static MediaQueryData mediaQuery;
   static bool initialization = false;
-  static late MediaQueryData mediaQuery;
-  static double get _width => mediaQuery.size.width;
-  static double get _height => mediaQuery.size.height;
-  static double get _topbarHeight => mediaQuery.padding.top;
-  static double get _botbarHeight => mediaQuery.padding.bottom;
-  static double get _pixelRatio => mediaQuery.devicePixelRatio;
+  // static late MediaQueryData mediaQuery;
+  static late FlutterView flutterView;
+  static double get _width => flutterView.physicalSize.width;
+  static double get _height => flutterView.physicalSize.height;
+  static double get _topbarHeight => flutterView.padding.top;
+  static double get _botbarHeight => flutterView.padding.bottom;
+  static double get _pixelRatio => flutterView.devicePixelRatio;
   static double _ratio = 0;
   static double get ratio => _ratio;
   static init({double number = 750, bool isForce = false}) {
@@ -27,7 +28,9 @@ class OuiSize {
         return;
       }
     }
-    mediaQuery = MediaQueryData.fromView(PlatformDispatcher.instance.views as FlutterView);
+
+    flutterView = WidgetsBinding.instance.platformDispatcher.views.first;
+    // mediaQuery = MediaQueryData.fromView(window);
     double uiWidth = number;
     _ratio = _width / uiWidth;
     if (!initialization) log.system("initialization design size: $uiWidth screenWidth: $_width screenHeight: $_height", tag: "Size");
@@ -35,7 +38,7 @@ class OuiSize {
   }
 
   static Size size() {
-    return mediaQuery.size;
+    return flutterView.physicalSize;
   }
 
   static px(number) {
@@ -64,11 +67,11 @@ class OuiSize {
   }
 
   static statusBarHeight() {
-    return mediaQuery.padding.top;
+    return _topbarHeight;
   }
 
   static touchBarHeight() {
-    return mediaQuery.padding.bottom;
+    return _botbarHeight;
   }
 
   static toolBarHeight() {
