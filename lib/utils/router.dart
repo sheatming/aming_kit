@@ -53,17 +53,6 @@ class OuiRoute {
             routeState: ouiRouterModel.arguments,
           });
         }
-      } else {
-        params.addAll({
-          route: res,
-          routeState: res,
-        });
-        if (isNotNull(context!.settings!.arguments)) {
-          rags.addAll({
-            route: context.settings!.arguments,
-            routeState: context.settings!.arguments,
-          });
-        }
       }
 
       return page;
@@ -117,15 +106,15 @@ class _OuiRouterModel {
 getParams(String field, object, {defValue, bool isArgs = false}) {
   String route = object.runtimeType.toString();
   if (field == "-") {
-    Map<String, dynamic> tmpParams = {};
-    OuiRoute.params[route]?.forEach((key, value) {
-      tmpParams.addAll({key: value.first});
-    });
-    return tmpParams;
+    // Map<String, dynamic> tmpParams = {};
+    // OuiRoute.params[route]?.forEach((key, value) {
+    //   tmpParams.addAll({key: value.first});
+    // });
+    return OuiRoute.params[route];
   }
-  if (OuiRoute.params?.containsKey(route) == true && OuiRoute.params[route]?.containsKey(field) == true) {
-    var tmpParam = OuiRoute.params[route]![field]?.first;
-    return tmpParam;
+  if (OuiRoute.params.containsKey(route) == true && OuiRoute.params[route]?.containsKey(field) == true) {
+    // var tmpParam = OuiRoute.params[route]![field]?.first;
+    return OuiRoute.params[route][field];
   }
   return defValue;
 }
