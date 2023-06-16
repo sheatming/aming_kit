@@ -41,7 +41,11 @@ class _MyHomePageState extends State<MyHomePage> {
       children: [
         OuiButton(
           onClick: () {
-            OuiRoute.goto("utils.permission");
+            OuiRoute.goto("utils.permission", data: {
+              "a": {"b": "c"}
+            }, arguments: {
+              "a": {"b": "c"}
+            });
           },
           child: Text(
             "权限",
